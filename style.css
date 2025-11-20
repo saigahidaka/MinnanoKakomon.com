@@ -1,1 +1,14 @@
-a
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+.container {
+  width: 100%;
+  max-width: 120px;
+  margin: auto;
+}
+
+body{
+    font-size: clamp(14px, 2vw, 20px)
+}
