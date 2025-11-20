@@ -1,13 +1,217 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <title>みんなの過去問ドットコム</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="/img/favicon-16.ico" sizes="16x16" type="image/png">
-    <link rel="icon" href="/img/favicon-32.ico" sizes="32x32" type="image/png">
-    <link rel="icon" href="/img/favicon-48.ico" sizes="48x48" type="image/png">
-    <link rel="icon" href="/img/favicon-128.ico" sizes="128x128" type="image/png">
-    <link rel="apple-touch-icon" href="/img/favicon-180.ico" sizes="180x180">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>みんなの過去問ドットコム - ログイン</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="/img/favicon-16.ico" sizes="16x16" type="image/png">
+  <!-- 必要に応じて他のfaviconも残してください -->
+  <style>
+    /* 簡単なインラインスタイル（必要なら style.css に移してOK） */
+    main { max-width: 420px; margin: 40px auto; padding: 16px; border: 1px solid #ddd; border-radius: 6px; background:#fff; }
+    input { width:100%; padding:8px; margin:6px 0; box-sizing:border-box; }
+    button { padding:10px 14px; margin:6px 0; width:100%; }
+    .row { display:flex; gap:8px; }
+    .half { flex:1; }
+    .small { font-size:0.9rem; color:#444; text-align:center; margin-top:8px;}
+  </style>
 </head>
+<body>
+  <header class="site-header">
+    <img src="img/header.png" alt="ヘッダー画像">
+    <a href="loginform.html" class="login-btn">ログイン</a>
+    <a href="introduction.html" class="intro-btn">製作者</a>
+    <a href="howtouse.html" class="howto-btn">使い方</a>
+  </header>
+
+  <main>
+    <h1>ログイン / サインアップ</h1>
+
+    <section id="auth-forms">
+      <h2>サインアップ（新規登録）</h2>
+      <input id="su-email" type="email" placeholder="メールアドレス">
+      <input id="su-pass" type="password" placeholder="パスワード（8文字以上推奨）">
+      <button id="btn-signup">アカウントを作成</button>
+
+      <hr>
+
+      <h2>ログイン</h2>
+      <input id="in-email" type="email" placeholder="メールアドレス">
+      <input id="in-pass" type="password" placeholder="パスワード">
+      <button id="btn-signin">ログイン</button>
+
+      <div class="row">
+        <button id="btn-google" class="half">Googleでログイン</button>
+        <button id="btn-anon" class="half">匿名ログイン</button>
+      </div>
+
+      <p class="small">
+        <a href="#" id="link-reset">パスワードを忘れた場合</a>
+      </p>
+    </section>
+
+    <section id="user-area" style="display:none;">
+      <h2>ログイン中</h2>
+      <p id="user-info">読み込み中…</p>
+      <button id="btn-signout">ログアウト</button>
+      <button id="btn-send-verify">確認メールを再送信</button>
+    </section>
+
+    <p id="msg" class="small"></p>
+  </main>
+
+  <!-- Firebase SDK（モジュール版） -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+    import {
+      getAuth,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      signOut,
+      onAuthStateChanged,
+      sendPasswordResetEmail,
+      sendEmailVerification,
+      GoogleAuthProvider,
+      signInWithPopup,
+      signInAnonymously
+    } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD4ViHcFj-9334N1OGQR1v3dYN1RhWfzpg",
+      authDomain: "minnanokakomon-c2b7f.firebaseapp.com",
+      projectId: "minnanokakomon-c2b7f",
+      storageBucket: "minnanokakomon-c2b7f.firebasestorage.app",
+      messagingSenderId: "387571811654",
+      appId: "1:387571811654:web:688b0c4203d07f4ae61147",
+      measurementId: "G-3XFHGSE7FN"
+    };
+    // ===============================================================
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // DOM
+    const suEmail = document.getElementById("su-email");
+    const suPass = document.getElementById("su-pass");
+    const btnSignup = document.getElementById("btn-signup");
+
+    const inEmail = document.getElementById("in-email");
+    const inPass = document.getElementById("in-pass");
+    const btnSignin = document.getElementById("btn-signin");
+
+    const btnGoogle = document.getElementById("btn-google");
+    const btnAnon = document.getElementById("btn-anon");
+    const linkReset = document.getElementById("link-reset");
+
+    const userArea = document.getElementById("user-area");
+    const authForms = document.getElementById("auth-forms");
+    const userInfo = document.getElementById("user-info");
+    const btnSignout = document.getElementById("btn-signout");
+    const btnSendVerify = document.getElementById("btn-send-verify");
+    const msg = document.getElementById("msg");
+
+    function showMsg(t) { msg.textContent = t; setTimeout(()=>{ msg.textContent = '' }, 6000); }
+
+    // サインアップ
+    btnSignup.addEventListener("click", async () => {
+      const email = suEmail.value.trim();
+      const pass = suPass.value;
+      if (!email || !pass) { showMsg("メールとパスワードを入力してください"); return; }
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email, pass);
+        await sendEmailVerification(cred.user);
+        showMsg("登録しました。確認メールを送信しました。受信箱を確認してください。");
+      } catch (e) {
+        showMsg("登録エラー: " + e.message);
+      }
+    });
+
+    // サインイン
+    btnSignin.addEventListener("click", async () => {
+      const email = inEmail.value.trim();
+      const pass = inPass.value;
+      if (!email || !pass) { showMsg("メールとパスワードを入力してください"); return; }
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        showMsg("ログイン成功！");
+        // 必要ならここで window.location.href = 'index.html' のように遷移
+      } catch (e) {
+        showMsg("ログイン失敗: " + e.message);
+      }
+    });
+
+    // Googleログイン（Popup）
+    btnGoogle.addEventListener("click", async () => {
+      try {
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+        showMsg("Googleでログインしました");
+      } catch (e) {
+        showMsg("Googleログイン失敗: " + e.message);
+      }
+    });
+
+    // 匿名ログイン（テスト用）
+    btnAnon.addEventListener("click", async () => {
+      try {
+        await signInAnonymously(auth);
+        showMsg("匿名ログインしました");
+      } catch (e) {
+        showMsg("匿名ログイン失敗: " + e.message);
+      }
+    });
+
+    // パスワードリセット
+    linkReset.addEventListener("click", async (ev) => {
+      ev.preventDefault();
+      const email = prompt("パスワードリセット用のメールアドレスを入力してください");
+      if (!email) return;
+      try {
+        await sendPasswordResetEmail(auth, email);
+        showMsg("リセット用メールを送信しました。");
+      } catch (e) {
+        showMsg("送信失敗: " + e.message);
+      }
+    });
+
+    // ログアウト
+    btnSignout.addEventListener("click", async () => {
+      try {
+        await signOut(auth);
+        showMsg("ログアウトしました");
+      } catch (e) {
+        showMsg("ログアウトに失敗しました");
+      }
+    });
+
+    // 確認メール再送
+    btnSendVerify.addEventListener("click", async () => {
+      const user = auth.currentUser;
+      if (!user) { showMsg("ログインしてください"); return; }
+      try {
+        await sendEmailVerification(user);
+        showMsg("確認メールを再送しました");
+      } catch (e) {
+        showMsg("送信失敗: " + e.message);
+      }
+    });
+
+    // 認証状態の監視
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        authForms.style.display = "none";
+        userArea.style.display = "block";
+        userInfo.textContent = `UID: ${user.uid} | ${user.email ?? '(匿名)'} | Verified: ${user.emailVerified}`;
+        // ここで必要ならトークン取得して自前サーバーに送ることも可能
+        // user.getIdToken().then(token => { ... });
+      } else {
+        authForms.style.display = "block";
+        userArea.style.display = "none";
+        userInfo.textContent = "";
+      }
+    });
+  </script>
+</body>
+</html>
