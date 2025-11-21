@@ -6,33 +6,118 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="/img/favicon-16.ico" sizes="16x16" type="image/png">
-  <!-- 必要に応じて他のfaviconも残してください -->
-  <style>
-    /* 簡単なインラインスタイル（必要なら style.css に移してOK） */
-    main { max-width: 420px; margin: 40px auto; padding: 16px; border: 1px solid #ddd; border-radius: 6px; background:#fff; }
-    input { width:100%; padding:8px; margin:6px 0; box-sizing:border-box; }
-    button { padding:10px 14px; margin:6px 0; width:100%; }
-    .row { display:flex; gap:8px; }
-    .half { flex:1; }
-    .small { font-size:0.9rem; color:#444; text-align:center; margin-top:8px;}
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    
+<style>
+    /* === メインエリア（カード部分） === */
+    main {
+      max-width: 420px;
+      width: 90%;
+      margin: 40px auto 60px; /* 上の余白を調整 */
+      padding: 40px;
+      border-radius: 20px;
+      background: #fff;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    h1 { font-size: 1.8rem; margin-bottom: 30px; color: #222; font-weight: 700; }
+    h2 {
+      font-size: 1.1rem; margin: 30px 0 10px; color: #666; text-align: left;
+      font-weight: 700; border-left: 4px solid #7fffd4;
+      padding-left: 10px;
+    }
+
+    /* 入力フォーム */
+    input {
+      width: 100%; padding: 14px; margin: 8px 0; 
+      border: 2px solid #f0f0f0; border-radius: 10px; font-size: 1rem; background-color: #fafafa;
+      transition: all 0.3s ease;
+    }
+    input:focus {
+      outline: none; border-color: #7fffd4; background-color: #fff;
+      box-shadow: 0 0 0 4px rgba(127, 255, 212, 0.3);
+    }
+
+    /* ログイン等のボタン */
+    button {
+      width: 100%; padding: 14px; margin: 10px 0; border: none; border-radius: 10px;
+      font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease;
+    }
+    button:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+
+    #btn-signup, #btn-signin { background: #20b2aa; color: white; }
+    #btn-signup:hover, #btn-signin:hover { background: #178c85; }
+
+    hr { margin: 30px 0; border: none; height: 1px; background: #eee; }
+
+    .row { display: flex; gap: 10px; margin-top: 10px; }
+    
+    #btn-google {
+      background-color: #fff; 
+      border: 2px solid #eee; 
+      color: #555; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center;
+      width: 100%;
+    }
+    #btn-google::before {
+      content: ''; display: inline-block; width: 18px; height: 18px; margin-right: 8px;
+      background: url('https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg') no-repeat center center / contain;
+    }
+
+    .small { font-size: 0.85rem; color: #888; text-align: center; margin-top: 20px; }
+    .small a { color: #20b2aa; text-decoration: none; font-weight: bold; }
+    
+    /* メッセージ表示エリア */
+    #msg {
+      font-weight: bold;
+      margin-top: 15px;
+      min-height: 1.2em;
+      transition: all 0.3s;
+    }
+
+    /* エラー時の赤点滅 */
+    @keyframes blink-red-text {
+      0% { opacity: 1; color: #ff0000; }
+      50% { opacity: 0.5; color: #e74c3c; }
+      100% { opacity: 1; color: #ff0000; }
+    }
+    @keyframes blink-red-input {
+      0% { border-color: #ff0000; background-color: #fff0f0; }
+      50% { border-color: #f0f0f0; background-color: #fafafa; }
+      100% { border-color: #ff0000; background-color: #fff0f0; }
+    }
+
+    .msg-error { animation: blink-red-text 0.8s infinite; }
+    .msg-error-input { animation: blink-red-input 0.8s infinite !important; }
+    .msg-success { color: #20b2aa; }
   </style>
 </head>
 <body>
+  
   <header class="site-header">
     <img src="img/header.png" alt="ヘッダー画像">
-    <a href="loginform.html" class="login-btn">ログイン</a>
-    <a href="introduction.html" class="intro-btn">製作者</a>
-    <a href="howtouse.html" class="howto-btn">使い方</a>
+    
+    <div class="header-buttons">
+      <a href="loginform.html" class="header-btn">ログイン</a>
+      <a href="howtouse.html" class="header-btn">使い方</a>
+      <a href="introduction.html" class="header-btn">製作者</a>
+    </div>
   </header>
 
   <main>
-    <h1>ログイン / サインアップ</h1>
-
+    <h1>ようこそ</h1>
+      
     <section id="auth-forms">
-      <h2>サインアップ（新規登録）</h2>
+      <h2>アカウント作成</h2>
       <input id="su-email" type="email" placeholder="メールアドレス">
-      <input id="su-pass" type="password" placeholder="パスワード（8文字以上推奨）">
-      <button id="btn-signup">アカウントを作成</button>
+      <input id="su-pass" type="password" placeholder="パスワード（8文字以上）">
+      <button id="btn-signup">無料で登録する</button>
 
       <hr>
 
@@ -42,41 +127,29 @@
       <button id="btn-signin">ログイン</button>
 
       <div class="row">
-        <button id="btn-google" class="half">Googleでログイン</button>
-        <button id="btn-anon" class="half">匿名ログイン</button>
+        <button id="btn-google">Googleでログイン</button>
       </div>
 
       <p class="small">
-        <a href="#" id="link-reset">パスワードを忘れた場合</a>
+        <a href="#" id="link-reset">パスワードを忘れた方はこちら</a>
       </p>
-    </section>
-
-    <section id="user-area" style="display:none;">
-      <h2>ログイン中</h2>
-      <p id="user-info">読み込み中…</p>
-      <button id="btn-signout">ログアウト</button>
-      <button id="btn-send-verify">確認メールを再送信</button>
     </section>
 
     <p id="msg" class="small"></p>
   </main>
 
-  <!-- Firebase SDK（モジュール版） -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
     import {
       getAuth,
       createUserWithEmailAndPassword,
       signInWithEmailAndPassword,
-      signOut,
       onAuthStateChanged,
       sendPasswordResetEmail,
       sendEmailVerification,
       GoogleAuthProvider,
-      signInWithPopup,
-      signInAnonymously
+      signInWithPopup
     } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-
 
     const firebaseConfig = {
       apiKey: "AIzaSyD4ViHcFj-9334N1OGQR1v3dYN1RhWfzpg",
@@ -87,129 +160,127 @@
       appId: "1:387571811654:web:688b0c4203d07f4ae61147",
       measurementId: "G-3XFHGSE7FN"
     };
-    // ===============================================================
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // DOM
     const suEmail = document.getElementById("su-email");
     const suPass = document.getElementById("su-pass");
     const btnSignup = document.getElementById("btn-signup");
-
     const inEmail = document.getElementById("in-email");
     const inPass = document.getElementById("in-pass");
     const btnSignin = document.getElementById("btn-signin");
-
     const btnGoogle = document.getElementById("btn-google");
-    const btnAnon = document.getElementById("btn-anon");
     const linkReset = document.getElementById("link-reset");
-
-    const userArea = document.getElementById("user-area");
     const authForms = document.getElementById("auth-forms");
-    const userInfo = document.getElementById("user-info");
-    const btnSignout = document.getElementById("btn-signout");
-    const btnSendVerify = document.getElementById("btn-send-verify");
     const msg = document.getElementById("msg");
 
-    function showMsg(t) { msg.textContent = t; setTimeout(()=>{ msg.textContent = '' }, 6000); }
-
-    // サインアップ
-    btnSignup.addEventListener("click", async () => {
-      const email = suEmail.value.trim();
-      const pass = suPass.value;
-      if (!email || !pass) { showMsg("メールとパスワードを入力してください"); return; }
-      try {
-        const cred = await createUserWithEmailAndPassword(auth, email, pass);
-        await sendEmailVerification(cred.user);
-        showMsg("登録しました。確認メールを送信しました。受信箱を確認してください。");
-      } catch (e) {
-        showMsg("登録エラー: " + e.message);
+    function showMsg(t, isError, errorInputs = []) { 
+      msg.textContent = t;
+      msg.className = "small"; 
+      document.querySelectorAll('.msg-error-input').forEach(el => el.classList.remove('msg-error-input'));
+      if (isError) {
+        msg.classList.add("msg-error");
+        errorInputs.forEach(input => { if(input) input.classList.add("msg-error-input"); });
+      } else {
+        msg.classList.add("msg-success");
       }
-    });
+      setTimeout(()=>{ 
+        msg.textContent = ''; 
+        msg.className = "small"; 
+        errorInputs.forEach(input => { if(input) input.classList.remove("msg-error-input"); });
+      }, 6000); 
+    }
 
-    // サインイン
-    btnSignin.addEventListener("click", async () => {
-      const email = inEmail.value.trim();
-      const pass = inPass.value;
-      if (!email || !pass) { showMsg("メールとパスワードを入力してください"); return; }
-      try {
-        await signInWithEmailAndPassword(auth, email, pass);
-        showMsg("ログイン成功！");
-        // 必要ならここで window.location.href = 'index.html' のように遷移
-      } catch (e) {
-        showMsg("ログイン失敗: " + e.message);
+    function translateError(code) {
+      switch(code) {
+        case "auth/invalid-email": return "メールアドレスの形式が正しくありません。";
+        case "auth/user-disabled": return "このユーザーは無効化されています。";
+        case "auth/user-not-found": return "ユーザーが見つかりません。メールアドレスが正しいか確認してください。";
+        case "auth/wrong-password": return "パスワードが間違っています。";
+        case "auth/email-already-in-use": return "このメールアドレスは既に登録されています。";
+        case "auth/weak-password": return "パスワードが弱すぎます。6文字以上で設定してください。";
+        case "auth/operation-not-allowed": return "このログイン方法は現在許可されていません。";
+        case "auth/popup-closed-by-user": return "ログイン画面が閉じられました。";
+        case "auth/too-many-requests": return "試行回数が多すぎます。しばらく時間を置いてから再度お試しください。";
+        case "auth/network-request-failed": return "通信エラーが発生しました。インターネット接続を確認してください。";
+        default: return "エラーが発生しました: " + code;
       }
-    });
+    }
 
-    // Googleログイン（Popup）
-    btnGoogle.addEventListener("click", async () => {
-      try {
-        const provider = new GoogleAuthProvider();
-        await signInWithPopup(auth, provider);
-        showMsg("Googleでログインしました");
-      } catch (e) {
-        showMsg("Googleログイン失敗: " + e.message);
-      }
-    });
+    if(btnSignup) {
+        btnSignup.addEventListener("click", async () => {
+        const email = suEmail.value.trim();
+        const pass = suPass.value;
+        if (!email && !pass) { showMsg("メールとパスワードを入力してください", true, [suEmail, suPass]); return; }
+        if (!email) { showMsg("メールアドレスを入力してください", true, [suEmail]); return; }
+        if (!pass) { showMsg("パスワードを入力してください", true, [suPass]); return; }
 
-    // 匿名ログイン（テスト用）
-    btnAnon.addEventListener("click", async () => {
-      try {
-        await signInAnonymously(auth);
-        showMsg("匿名ログインしました");
-      } catch (e) {
-        showMsg("匿名ログイン失敗: " + e.message);
-      }
-    });
+        try {
+            const cred = await createUserWithEmailAndPassword(auth, email, pass);
+            await sendEmailVerification(cred.user);
+            showMsg("登録しました。確認メールを送信しました。", false);
+        } catch (e) {
+            showMsg(translateError(e.code), true, [suEmail, suPass]);
+        }
+        });
+    }
 
-    // パスワードリセット
-    linkReset.addEventListener("click", async (ev) => {
-      ev.preventDefault();
-      const email = prompt("パスワードリセット用のメールアドレスを入力してください");
-      if (!email) return;
-      try {
-        await sendPasswordResetEmail(auth, email);
-        showMsg("リセット用メールを送信しました。");
-      } catch (e) {
-        showMsg("送信失敗: " + e.message);
-      }
-    });
+    if(btnSignin) {
+        btnSignin.addEventListener("click", async () => {
+        const email = inEmail.value.trim();
+        const pass = inPass.value;
+        if (!email && !pass) { showMsg("メールとパスワードを入力してください", true, [inEmail, inPass]); return; }
+        if (!email) { showMsg("メールアドレスを入力してください", true, [inEmail]); return; }
+        if (!pass) { showMsg("パスワードを入力してください", true, [inPass]); return; }
 
-    // ログアウト
-    btnSignout.addEventListener("click", async () => {
-      try {
-        await signOut(auth);
-        showMsg("ログアウトしました");
-      } catch (e) {
-        showMsg("ログアウトに失敗しました");
-      }
-    });
+        try {
+            await signInWithEmailAndPassword(auth, email, pass);
+            showMsg("ログイン成功！index.htmlへ移動します...", false);
+            window.location.href = 'index.html';
+        } catch (e) {
+             showMsg(translateError(e.code), true, [inEmail, inPass]);
+        }
+        });
+    }
 
-    // 確認メール再送
-    btnSendVerify.addEventListener("click", async () => {
-      const user = auth.currentUser;
-      if (!user) { showMsg("ログインしてください"); return; }
-      try {
-        await sendEmailVerification(user);
-        showMsg("確認メールを再送しました");
-      } catch (e) {
-        showMsg("送信失敗: " + e.message);
-      }
-    });
+    if(btnGoogle) {
+        btnGoogle.addEventListener("click", async () => {
+        try {
+            const provider = new GoogleAuthProvider();
+            await signInWithPopup(auth, provider);
+            showMsg("Googleでログインしました", false);
+            window.location.href = 'index.html';
+        } catch (e) {
+            showMsg(translateError(e.code), true);
+        }
+        });
+    }
 
-    // 認証状態の監視
+    if(linkReset) {
+        linkReset.addEventListener("click", async (ev) => {
+        ev.preventDefault();
+        let email = inEmail.value.trim();
+        if (!email) {
+            email = prompt("パスワード再設定用のメールアドレスを入力してください");
+        }
+        if (!email) return;
+        try {
+            await sendPasswordResetEmail(auth, email);
+            showMsg("リセット用メールを送信しました。", false);
+        } catch (e) {
+            showMsg(translateError(e.code), true, [inEmail]);
+        }
+        });
+    }
+
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        authForms.style.display = "none";
-        userArea.style.display = "block";
-        userInfo.textContent = `UID: ${user.uid} | ${user.email ?? '(匿名)'} | Verified: ${user.emailVerified}`;
-        // ここで必要ならトークン取得して自前サーバーに送ることも可能
-        // user.getIdToken().then(token => { ... });
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 500); 
       } else {
-        authForms.style.display = "block";
-        userArea.style.display = "none";
-        userInfo.textContent = "";
+        if(authForms) authForms.style.display = "block";
       }
     });
   </script>
