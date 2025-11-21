@@ -47,20 +47,32 @@ img {
   
   /* 左右の余白（右側を少し広めに確保） */
   padding: 0 20px;
-  padding-right: 100px; /* 右だけ少し多めに */
+  padding-right: 30px; /* 右だけ少し多めに */
 }
 
 .site-header img { 
-  height: 50px; 
+
+  
+  height: auto;      
+  max-height: 50px;  
+  
   width: auto; 
   display: block; 
+  
+  /* 縦横比固定 */
+  object-fit: contain; 
 }
 
 .header-buttons { 
-  display: flex; 
+  position: absolute; 
   gap: 15px; 
   /* ボタンエリアの右側にも安全地帯を作る */
-  padding-right: 10px;
+  top: 18px;    /* 上からの距離 */
+  right: 40px;  /* 右からの距離 */
+  
+  /* ボタン同士の並び設定はそのまま */
+  display: flex;
+  padding-right: 50px;
 }
 
 /* === ヘッダーボタン === */
