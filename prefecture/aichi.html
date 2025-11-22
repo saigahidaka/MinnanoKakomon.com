@@ -20,6 +20,7 @@
       max-width: 800px;
       margin-left: auto;
       margin-right: auto;
+      margin-bottom: 150px;
     }
 
     /* 検索ボックス */
@@ -66,14 +67,14 @@
 
     /* 学校リストの表示エリア */
     .tab-content {
-      display: none; /* 最初は隠しておく */
+      display: none; 
       text-align: left;
       background: #fff;
       padding: 10px 20px;
       border-radius: 10px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
-    /* activeクラスがつくと表示される */
+
     .tab-content.active {
       display: block;
     }
@@ -101,7 +102,27 @@
     .school-list li a:hover {
       color: #20b2aa;
       background-color: #f9f9f9;
-      padding-left: 10px; /* ホバーで少し右に動く演出 */
+      padding-left: 10px; /* ホバーで少し右に動く */
+    }
+
+    .back-btn {
+      display: inline-block;
+      margin-top: 40px;      /* 上に少し隙間をあける */
+      padding: 12px 40px;    /* ボタンの大きさ */
+      background: #fff;      /* 背景は白 */
+      color: #666;           /* 文字はグレー */
+      border: 2px solid #ddd;/* 枠線 */
+      text-decoration: none; /* 下線を消す */
+      border-radius: 50px;   /* 角を丸く */
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    
+    .back-btn:hover { 
+      background: #666;      /* ホバー時グレー */
+      color: #fff;           /* 文字は白 */
+      border-color: #666;
     }
   </style>
 </head>
@@ -123,7 +144,7 @@
   <main style="margin-top: 120px; text-align: center;">
     <h1>愛知県の過去問</h1>
     
-    <input type="text" id="school-search" placeholder="学校名を検索（例：名古屋）">
+    <input type="text" id="school-search" placeholder="学校名を検索">
 
     <div class="tab-buttons">
       <button class="tab-btn active" onclick="switchTab('univ', this)">大学</button>
@@ -131,40 +152,507 @@
     </div>
 
     <div id="univ" class="tab-content active">
+  
+      <div class="filter-buttons">
+        <button class="filter-btn active" onclick="filterUniv('all', this)">すべて</button>
+        <button class="filter-btn" onclick="filterUniv('nat', this)">国立</button>
+        <button class="filter-btn" onclick="filterUniv('pub', this)">公立</button>
+        <button class="filter-btn" onclick="filterUniv('pri', this)">私立</button>
+      </div>
+
       <ul class="school-list">
-        <li><a href="#">名古屋大学</a></li>
-        <li><a href="#">名古屋工業大学</a></li>
-        <li><a href="#">愛知教育大学</a></li>
-        <li><a href="#">愛知県立大学</a></li>
-        <li><a href="#">南山大学</a></li>
-        <li><a href="#">中京大学</a></li>
-        <li><a href="aichi-univ/meijo.html">名城大学</a></li>
-        <li><a href="#">愛知大学</a></li>
-        <li><a href="#">愛知学院大学</a></li>
-        <li><a href="#">中部大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=meizyou">名城大学</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=aichikyoiku">愛知教育大学</a></li>
+        <li data-category="pub"><a href="../detail/aichi-detail.html?id=aichikenritu">愛知県立大学</a></li>
+        <li data-category="pub"><a href="../detail/aichi-detail.html?id=aichigeizyutu">愛知県立芸術大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=aichi">愛知大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=aichiika">愛知医科大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=aichigakuin">愛知学院大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=aichigakusen">愛知学泉大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=aichikouka">愛知工科大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=aichikougyou">愛知工業大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=aichisangyou">愛知産業大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=aichisyukutoku">愛知淑徳大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=aichitouhou">愛知東邦大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=aichibunkyou">愛知文教大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=aichimizuho">愛知みずほ大学</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=nagoya">名古屋大学</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=nagoyakougyou">名古屋工業大学</a></li>
+        <li data-category="pub"><a href="../detail/aichi-detail.html?id=nagoyaitiritu">名古屋市立大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=nagoyaongaku">名古屋音楽大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=nagoyagaikokugo">名古屋外国語大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=nagoyagakuin">名古屋学院大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=nagoyagakugei">名古屋学芸大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=nagoyakeizai">名古屋経済大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=nagoyageizyutu">名古屋芸術大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=nagoyakokusai">名古屋国際工科専門職大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=nagoyasangyou">名古屋産業大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=nagoyasyouka">名古屋商科大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=nagoyaaoi">名古屋葵大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=nagoyazoukei">名古屋造形大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=nagoyabunri">名古屋文理大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=nagoyayanagisiro">名古屋柳城女子大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=nagoyaongaku">名古屋大学</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=ntoyohasigizyutu">豊橋技術科学大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=itinomiya">一宮研伸大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=oukagakuen">桜花学園大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=okazakizyosi">岡崎女子大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=kinzyou">金城学院大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=sigakukan">至学館大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=syuubun">修文大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=sugiyama">椙山女学園大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=seizyou">星城大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=daidou">大同大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=tyuukyou">中京大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=tyuubu">中部大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=toukaigakuen">東海学園大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=douhou">同朋大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=toyotakougyou">豊田工業大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=toyohasisouzou">豊橋創造大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=nanzan">南山大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=nihonsekizyuzi">日本赤十字豊田看護大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=nihonhukusi">日本福祉大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=ningenkankyou">人間環境大学</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=huzitaika">藤田医科大学</a></li>
       </ul>
     </div>
 
     <div id="middle" class="tab-content">
+      <div class="filter-buttons">
+        <button class="filter-btn active" onclick="filterUniv('all', this)">すべて</button>
+        <button class="filter-btn" onclick="filterUniv('nat', this)">国公立</button>
+        <button class="filter-btn" onclick="filterUniv('pri', this)">私立</button>
+      </div>
       <ul class="school-list">
-        <li><a href="#">守山中学校</a></li>
-        <li><a href="#">東海中学校</a></li>
-        <li><a href="#">滝中学校</a></li>
-        <li><a href="#">南山中学校（男子部）</a></li>
-        <li><a href="#">南山中学校（女子部）</a></li>
-        <li><a href="#">愛知淑徳中学校</a></li>
-        <li><a href="#">名古屋中学校</a></li>
-        <li><a href="#">金城学院中学校</a></li>
-        <li><a href="#">椙山女学園中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=1">愛知教育大学附属名古屋中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=2">愛知教育大学附属岡崎中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=3">愛知総合工科高等学校附属中学校</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=4">愛知中学校</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=5">愛知工業大学名電中学校</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=6">愛知淑徳中学校</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=7">愛知みずほ大学瑞穂中学校</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=8">桜花学園中学校</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=9">海陽中等教育学校</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=10">金城学院中学校</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=11">椙山女学園中学校</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=12">星城中学校</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=13">聖霊中学校</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=14">聖カピタニオ女子中学校</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=15">大成中学校</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=16">滝中学校</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=17">中部大学春日丘中学校</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=18">東海中学校</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=19">名古屋中学校</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=20">名古屋国際中学校</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=21">名古屋女子大学中学校</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=22">名古屋経済大学市邨中学校</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=23">名古屋経済大学高蔵中学校</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=24">南山中学校男子部</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=25">南山中学校女子部</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=26">日本福祉大学付属中学校</a></li>
+        <li data-category="pri"><a href="../detail/aichi-detail.html?id=27">愛知産業大学三河中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=28">名古屋市立千種台中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=29">名古屋市立東星中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=30">名古屋市立城山中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=31">名古屋市立桜山中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=32">名古屋市立振甫中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=33">名古屋市立千種中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=34">名古屋市立若水中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=35">名古屋市立冨士中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=36">名古屋市立あずま中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=37">名古屋市立桜丘中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=38">名古屋市立山吹中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=39">名古屋市立矢田中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=40">名古屋市立大曽根中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=41">名古屋市立八王子中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=42">名古屋市立北陵中学校</a></li>        
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=43">名古屋市立志賀中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=44">名古屋市立若葉中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=45">名古屋市立楠中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=46">名古屋市立楠中学校分校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=47">名古屋市立北中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=48">名古屋市立浄心中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=49">名古屋市立名塚中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=50">名古屋市立菊井中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=51">名古屋市立天神山中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=52">名古屋市立平田中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=53">名古屋市立山田中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=54">名古屋市立山田東中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=55">名古屋市立笹島中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=56">名古屋市立黄金中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=57">名古屋市立笈瀬中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=58">名古屋市立日比津中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=59">名古屋市立豊国中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=60">名古屋市立豊正中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=61">名古屋市立御田中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=62">名古屋市立丸の内中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=63">名古屋市立前津中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=64">名古屋市立白山中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=65">名古屋市立伊勢山中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=66">名古屋市立北山中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=67">名古屋市立川名中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=68">名古屋市立駒方中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=69">名古屋市立円上中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=70">名古屋市立汐路中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=71">名古屋市立瑞穂ヶ丘中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=72">名古屋市立津賀田中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=73">名古屋市立田光中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=74">名古屋市立萩山中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=75">名古屋市立宮中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=76">名古屋市立沢上中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=77">名古屋市立日比野中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=78">名古屋市立一柳中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=79">名古屋市立高杉中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=80">名古屋市立昭和橋中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=81">名古屋市立長良中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=82">名古屋市立山王中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=83">名古屋市立一色中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=84">名古屋市立供米田中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=85">名古屋市立助光中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=86">名古屋市立富田中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=87">名古屋市立はとり中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=88">名古屋市立東港中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=89">名古屋市立港南中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=90">名古屋市立港北中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=91">名古屋市立宝神中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=92">名古屋市立南陽中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=93">名古屋市立当知中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=94">名古屋市立南陽東中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=95">名古屋市立新郊中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=96">名古屋市立桜田中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=97">名古屋市立大江中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=98">名古屋市立南光中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=99">名古屋市立名南中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=100">名古屋市立本城中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=101">名古屋市立南稜中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=102">名古屋市立明豊中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=103">名古屋市立守山中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=104">名古屋市立守山西中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=105">名古屋市立守山東中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=106">名古屋市立大森中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=107">名古屋市立志段味中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=108">名古屋市立吉根中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=109">名古屋市立森孝中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=110">名古屋市立鳴海中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=111">名古屋市立有松中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=112">名古屋市立大高中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=113">名古屋市立南陵中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=114">名古屋市立東陵中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=115">名古屋市立扇台中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=116">名古屋市立千鳥丘中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=117">名古屋市立神の倉中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=118">名古屋市立滝ノ水中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=119">名古屋市立左京山中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=120">名古屋市立鎌倉台中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=121">名古屋市立神沢中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=122">名古屋市立神丘中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=123">名古屋市立高針台中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=124">名古屋市立猪高中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=125">名古屋市立藤森中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=126">名古屋市立香流中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=127">名古屋市立猪高台中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=128">名古屋市立牧の池中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=129">名古屋市立天白中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=130">名古屋市立御幸山中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=131">名古屋市立植田中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=132">名古屋市立平針中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=133">名古屋市立南天白中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=134">名古屋市立原中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=135">名古屋市立久方中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=136">一宮市立中部中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=137">一宮市立南部中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=138">一宮市立北部中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=139">一宮市立大和中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=140">一宮市立奥中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=141">一宮市立萩原中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=142">一宮市立千秋中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=143">一宮市立大和南中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=144">一宮市立今伊勢中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=145">一宮市立葉栗中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=146">一宮市立西成中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=147">一宮市立丹陽中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=148">一宮市立浅井中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=149">一宮市立北方中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=150">一宮市立西成東部中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=151">一宮市立木曽川中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=152">一宮市立尾西第一中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=153">一宮市立尾西第二中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=154">一宮市立尾西第三中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=155">瀬戸市立水無瀬中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=156">瀬戸市立幡山中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=157">瀬戸市立品野中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=158">瀬戸市立光陵中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=159">瀬戸市立水野中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=160">瀬戸市立南山中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=161">瀬戸市立にじの丘中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=162">春日井市立東部中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=163">春日井市立西部中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=164">春日井市立中部中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=165">春日井市立坂下中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=166">春日井市立高蔵寺中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=167">春日井市立西部中学校分校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=168">春日井市立高森台中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=169">春日井市立松原中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=170">春日井市立知多中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=171">春日井市立鷹来中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=172">春日井市立柏原中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=173">春日井市立南城中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=174">春日井市立岩成台中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=175">春日井市立石尾台中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=176">春日井市立中部中学校分校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=177">犬山市立城東中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=178">犬山市立犬山中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=179">犬山市立南部中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=180">犬山市立東部中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=181">江南市立古知野中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=182">江南市立布袋中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=183">江南市立宮田中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=184">江南市立北部中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=185">江南市立西部中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=186">小牧市立小牧中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=187">小牧市立味岡中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=188">小牧市立篠岡中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=189">小牧市立北里中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=190">小牧市立応時中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=191">小牧市立岩崎中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=192">小牧市立桃陵中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=193">小牧市立光ヶ丘中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=194">小牧市立大城中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=195">稲沢市立稲沢中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=196">稲沢市立明治中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=197">稲沢市立千代田中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=198">稲沢市立大里中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=199">稲沢市立治郎丸中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=200">稲沢市立稲沢西中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=201">稲沢市立大里東中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=202">稲沢市立祖父江中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=203">稲沢市立平和中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=204">尾張旭市立旭中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=205">尾張旭市立東中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=206">尾張旭市立西中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=207">岩倉市立岩倉中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=208">岩倉市立南部中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=209">豊明市立豊明中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=210">豊明市立栄中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=211">豊明市立沓掛中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=212">日進市立日進中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=213">日進市立日進西中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=214">日進市立日進東中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=215">日進市立日進北中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=216">清須市立新川中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=217">清須市立西枇杷島中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=218">清須市立清洲中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=219">清須市立春日中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=220">北名古屋市立師勝中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=221">北名古屋市立西春中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=222">北名古屋市立白木中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=223">北名古屋市立天神中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=224">北名古屋市立熊野中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=225">北名古屋市立訓原中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=226">長久手市立長久手中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=227">長久手市立北中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=228">長久手市立南中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=229">東郷町立東郷中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=230">東郷町立春木中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=231">東郷町立諸輪中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=232">豊山町立豊山中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=233">大口町立大口中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=234">扶桑町立扶桑中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=235">扶桑町立扶桑北中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=236">津島市立藤浪中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=237">津島市立天王中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=238">津島市立暁中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=239">津島市立神守中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=240">愛西市立佐屋中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=241">愛西市立立田中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=242">愛西市立八開中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=243">愛西市立佐織中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=244">愛西市立佐織西中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=245">弥富市立弥富中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=246">弥富市立弥富北中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=247">弥富市立十四山中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=248">あま市立七宝中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=249">あま市立七宝北中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=250">あま市立美和中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=251">あま市立甚目寺中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=252">あま市立甚目寺南中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=253">大治町立大治中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=254">蟹江町立蟹江中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=255">蟹江町立蟹江北中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=256">飛島村立飛島学園</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=257">半田市立半田中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=258">半田市立乙川中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=259">半田市立亀崎中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=260">半田市立成岩中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=261">半田市立青山中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=262">常滑市立常滑中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=263">常滑市立鬼崎中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=264">常滑市立南陵中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=265">常滑市立青海中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=266">東海市立横須賀中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=267">東海市立上野中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=268">東海市立平洲中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=269">東海市立富木島中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=270">東海市立名和中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=271">東海市立加木屋中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=272">大府市立大府中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=273">大府市立大府西中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=274">大府市立大府北中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=275">大府市立大府南中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=276">知多市立八幡中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=277">知多市立知多中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=278">知多市立東部中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=279">知多市立中部中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=280">知多市立旭南中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=281">阿久比町立阿久比中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=282">東浦町立東浦中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=283">東浦町立北部中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=284">東浦町立西部中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=285">南知多町立南知多中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=286">美浜町立美浜中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=287">武豊町立富貴中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=288">武豊町立武豊中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=289">岡崎市立甲山中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=290">岡崎市立美川中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=291">岡崎市立南中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=292">岡崎市立竜海中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=293">岡崎市立葵中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=294">岡崎市立城北中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=295">岡崎市立福岡中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=296">岡崎市立東海中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=297">岡崎市立河合中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=298">岡崎市立常磐中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=299">岡崎市立岩津中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=300">岡崎市立矢作中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=301">岡崎市立六ツ美中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=302">岡崎市立矢作北中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=303">岡崎市立新香山中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=304">岡崎市立六ツ美北中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=305">岡崎市立湘南中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=306">岡崎市立北中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=307">岡崎市立額田中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=308">岡崎市立緑丘中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=309">碧南市立新川中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=310">碧南市立中央中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=311">碧南市立南中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=312">碧南市立東中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=313">碧南市立西端中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=314">刈谷市立刈谷南中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=315">刈谷市立刈谷東中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=316">刈谷市立富士松中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=317">刈谷市立雁が音中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=318">刈谷市立依佐美中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=319">刈谷市立朝日中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=320">豊田市立崇化館中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=321">豊田市立朝日丘中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=322">豊田市立豊南中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=323">豊田市立高橋中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=324">豊田市立上郷中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=325">豊田市立高岡中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=326">豊田市立保見中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=327">豊田市立猿投中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=328">豊田市立猿投台中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=329">豊田市立石野中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=330">豊田市立松平中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=331">豊田市立竜神中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=332">豊田市立美里中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=333">豊田市立城北中学校分校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=334">豊田市立逢妻中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=335">豊田市立若園中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=336">豊田市立梅坪台中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=337">豊田市立前林中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=338">豊田市立益富中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=339">豊田市立末野原中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=340">豊田市立井郷中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=341">豊田市立藤岡中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=342">豊田市立藤岡南中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=343">豊田市立小原中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=344">豊田市立足助中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=345">豊田市立下山中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=346">豊田市立旭中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=347">豊田市立稲武中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=348">安城市立安城南中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=349">安城市立安城北中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=350">安城市立明祥中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=351">安城市立桜井中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=352">安城市立安城西中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=353">安城市立篠目中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=354">安城市立東山中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=355">安城市立安祥中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=356">西尾市立西尾中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=357">西尾市立鶴城中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=358">西尾市立平坂中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=359">西尾市立寺津中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=360">西尾市立福地中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=361">西尾市立東部中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=362">西尾市立一色中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=363">西尾市立吉良中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=364">西尾市立幡豆中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=365">知立市立知立中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=366">知立市立竜北中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=367">知立市立知立南中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=368">高浜市立高浜中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=369">高浜市立高浜南中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=370">みよし市立三好中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=371">みよし市立北中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=372">みよし市立南中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=373">みよし市立三好丘中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=374">幸田町立幸田中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=375">幸田町立北部中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=376">幸田町立南部中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=377">豊橋市立八町中学校</a></li>        
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=378">豊橋市立中部中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=379">豊橋市立羽田中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=380">豊橋市立本郷中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=381">豊橋市立南部中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=382">豊橋市立高師台中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=383">豊橋市立青陵中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=384">豊橋市立東部中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=385">豊橋市立豊岡中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=386">豊橋市立東陵中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=387">豊橋市立豊城中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=388">豊橋市立南稜中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=389">豊橋市立五並中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=390">豊橋市立二川中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=391">豊橋市立北部中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=392">豊橋市立吉田方中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=393">豊橋市立牟呂中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=394">豊橋市立前芝中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=395">豊橋市立石巻中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=396">豊橋市立南陽中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=397">豊橋市立桜丘中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=398">豊橋市立章南中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=399">豊川市立東部中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=400">豊川市立南部中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=401">豊川市立西部中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=402">豊川市立代田中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=403">豊川市立金屋中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=404">豊川市立一宮中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=405">豊川市立音羽中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=406">豊川市立御津中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=407">豊川市立小坂井中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=408">蒲郡市立蒲郡中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=409">蒲郡市立三谷中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=410">蒲郡市立塩津中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=411">蒲郡市立大塚中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=412">蒲郡市立中部中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=413">蒲郡市立形原中学校</a></li>
+        <li data-category="nat"><a href="../detail/aichi-detail.html?id=414">蒲郡市立西浦中</a></li>
       </ul>
     </div>
 
+    <main style="margin-top: 120px; text-align: center;">
+        <div id="middle" class="tab-content">
+        </div>
+      
+        <a href="../index.html" class="back-btn">戻る</a>
+    </main>
   </main>
 
   <script type="module" src="../auth.js"></script>
 
   <script>
-    // 1. タブ切り替え機能
+    //タブ切り替え機能
     function switchTab(tabId, btnElement) {
       // すべてのコンテンツを隠す
       document.querySelectorAll('.tab-content').forEach(el => {
@@ -182,28 +670,72 @@
       // 押されたボタンに色をつける
       btnElement.classList.add('active');
       
-      // タブを切り替えたら検索ボックスをクリアして、リストを全表示に戻すと親切
+      // タブを切り替えたら検索ボックスをクリア
       document.getElementById('school-search').value = '';
       document.querySelectorAll('.school-list li').forEach(li => li.style.display = '');
     }
 
-    // 2. 検索機能（文字を入れるたびに実行）
-    document.getElementById('school-search').addEventListener('keyup', function() {
-      const searchText = this.value.toLowerCase(); // 入力された文字（小文字に統一）
+      // 検索機能
+      document.getElementById('school-search').addEventListener('keyup', function() {
+      const searchText = this.value.toLowerCase(); // 入力された文字
       
-      // 今見えているタブの中のリストを取得
+      // タブの中のリストを取得
       const activeTab = document.querySelector('.tab-content.active');
       const items = activeTab.querySelectorAll('li');
 
       items.forEach(item => {
         const schoolName = item.textContent; // 学校名を取得
         if (schoolName.toLowerCase().includes(searchText)) {
-          item.style.display = ''; // 一致したら表示
+          item.style.display = ''; 
         } else {
-          item.style.display = 'none'; // 一致しなかったら隠す
+          item.style.display = 'none'; 
         }
       });
     });
+
+// 3. 絞り込み機能（修正版）
+    function filterUniv(category, btnElement) {
+      // 今開いているタブ（activeがついているタブ）を取得
+      const activeTab = document.querySelector('.tab-content.active');
+      if (!activeTab) return;
+
+      // そのタブの中にあるリストだけを取得
+      const listItems = activeTab.querySelectorAll('.school-list li');
+      
+      listItems.forEach(li => {
+        const itemCat = li.getAttribute('data-category');
+        
+        // 表示・非表示の判定
+        let isMatch = false;
+        if (category === 'all') {
+           isMatch = true;
+        } else if (category === 'natpub') {
+           // 「国公立」ボタンの場合は nat か pub を表示
+           if (itemCat === 'nat' || itemCat === 'pub') {
+             isMatch = true;
+           }
+        } else {
+           // それ以外（私立など）は完全一致
+           if (itemCat === category) {
+             isMatch = true;
+           }
+        }
+
+        // スタイルの適用
+        if (isMatch) {
+          li.style.display = '';
+        } else {
+          li.style.display = 'none';
+        }
+      });
+
+      // ボタンの色を切り替え（そのタブ内のボタンのみ）
+      activeTab.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      btnElement.classList.add('active');
+      
+      // 検索ボックスをリセット
+      document.getElementById('school-search').value = '';
+    }
   </script>
   
 </body>

@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>選択 - みんなの過去問ドットコム</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <link rel="stylesheet" href="../style.css">
+  <link rel="icon" href="../img/favicon-16.ico" sizes="16x16" type="image/png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+
+  <style> body { display: none; } </style>
+
+  <style>
+    body {
+      background-color: #7fffd4; 
+      min-height: 100vh;
+    }
+
+    /* メインコンテンツのカード設定 */
+    .container {
+      width: 90%;
+      max-width: 600px;
+      margin: 120px auto 150px; 
+      background: rgba(255, 255, 255, 0.9); 
+      padding: 40px 30px;
+      border-radius: 20px; 
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+      text-align: center;
+    }
+
+    /* 大学名 */
+    h1 { 
+      margin: 0 0 10px 0;
+      color: #20b2aa; 
+      font-size: 1.8rem;
+      letter-spacing: 0.05em;
+    }
+    
+    /* サブタイトル */
+    h2 { 
+      margin: 0 0 30px 0; 
+      color: #888; 
+      font-size: 1rem; 
+      font-weight: normal;
+    }
+    
+    /* リスト全体 */
+    .list-group { list-style: none; padding: 0; margin: 0; }
+    .list-group li { margin-bottom: 15px; }
+    
+    /* リストのリンクボタン */
+    .list-group a {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 25px;
+      background: #fff;
+      border-radius: 12px;
+      text-decoration: none;
+      color: #333;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      border: 1px solid #eee;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 左側のアクセントバー */
+    .list-group a::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 6px;
+      background: #20b2aa;
+      opacity: 0.5;
+      transition: 0.3s;
+    }
+
+    /* ホバー時の動き */
+    .list-group a:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(32, 178, 170, 0.2);
+      border-color: #20b2aa;
+    }
+    .list-group a:hover::before {
+      opacity: 1;
+      width: 10px;
+    }
+
+    /* 矢印アイコン */
+    .arrow-icon {
+      color: #ccc;
+      font-size: 1.2rem;
+      transition: 0.3s;
+    }
+    .list-group a:hover .arrow-icon {
+      color: #20b2aa;
+      transform: translateX(5px);
+    }
+
+    /* 戻るボタン */
+    .back-btn {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 12px 40px;
+      background: #fff;
+      color: #666;
+      border: 2px solid #ddd;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .back-btn:hover { 
+      background: #666;
+      color: #fff;
+      border-color: #666;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="site-header">
+    <a href="../index.html">
+      <img src="../img/header.png" alt="ヘッダー画像">
+    </a>
+    
+    <div class="header-buttons">
+      <a href="../loginform.html" class="header-btn">ログイン</a>
+      <a href="../howtouse.html" class="header-btn">使い方</a>
+      <a href="../introduction.html" class="header-btn">製作者</a>
+      <button id="btn-logout" class="header-btn" style="background:#ff6b6b; cursor:pointer;">ログアウト</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <h1 id="main-title">読み込み中...</h1>
+    <h2 id="sub-title"></h2>
+    <ul id="content-list" class="list-group">
+    </ul>
+    <button onclick="goBack()" class="back-btn">戻る</button>
+  </div>
+
+  <script type="module" src="../auth.js"></script>
+
+  <script>
+    /* データ登録エリア大学*/
+const univData = {
+      "nagoya": {
+        name: "名古屋大学",
+        faculties: [
+          { name: "文学部", depts: ["人文学科"] },
+          { name: "教育学部", depts: ["人間発達科学科"] },
+          { name: "法学部", depts: ["法律・政治学科"] },
+          { name: "経済学部", depts: ["経済学科", "経営学科"] },
+          { name: "情報学部", depts: ["自然情報学科", "人間・社会情報学科", "コンピュータ科学科"] },
+          { name: "理学部", depts: ["数理学科", "物理学科", "化学科", "生命理学科", "地球惑星科学科"] },
+          { name: "医学部", depts: ["医学科", "保健学科"] },
+          { name: "工学部", depts: ["化学生命工学科", "物理工学科", "マテリアル工学科", "電気電子情報工学科", "機械・航空宇宙工学科", "エネルギー理工学科", "環境土木・建築学科"] },
+          { name: "農学部", depts: ["生物環境科学科", "資源生物科学科", "応用生命科学科"] }
+        ]
+      },
+      "aichikyoiku": {
+        name: "愛知教育大学",
+        faculties: [
+          { name: "教育学部", depts: ["学校教員養成課程", "教育支援専門職養成課程"] }
+        ]
+      },
+      "nagoyakougyou": {
+        name: "名古屋工業大学",
+        faculties: [
+          { name: "工学部（第一部）", depts: ["生命・応用化学科", "物理工学科", "電気・機械工学科", "情報工学科", "社会工学科", "創造工学教育課程"] },
+          { name: "工学部（第二部）", depts: ["物質工学科", "機械工学科", "電気情報工学科", "社会開発工学科"] }
+        ]
+      },
+      "ntoyohasigizyutu": {
+        name: "豊橋技術科学大学",
+        faculties: [
+          { name: "工学部", depts: ["機械工学課程", "電気・電子情報工学課程", "情報・知能工学課程", "応用化学・生命工学課程", "建築・都市システム学課程"] }
+        ]
+      },
+      "aichikenritu": {
+        name: "愛知県立大学",
+        faculties: [
+          { name: "外国語学部", depts: ["英米学科", "ヨーロッパ学科", "中国学科", "国際関係学科"] },
+          { name: "日本文化学部", depts: ["国語国文学科", "歴史文化学科"] },
+          { name: "教育福祉学部", depts: ["教育発達学科", "社会福祉学科"] },
+          { name: "看護学部", depts: ["看護学科"] },
+          { name: "情報科学部", depts: ["情報科学科"] }
+        ]
+      },
+      "aichigeizyutu": {
+        name: "愛知県立芸術大学",
+        faculties: [
+          { name: "美術学部", depts: ["日本画専攻", "油画専攻", "彫刻専攻", "デザイン・工芸科", "芸術学専攻"] },
+          { name: "音楽学部", depts: ["作曲専攻", "声楽専攻", "器楽専攻"] }
+        ]
+      },
+      "nagoyaitiritu": {
+        name: "名古屋市立大学",
+        faculties: [
+          { name: "医学部", depts: ["医学科"] },
+          { name: "薬学部", depts: ["薬学科", "生命薬科学科"] },
+          { name: "経済学部", depts: ["経済学科", "経営学科", "会計ファイナンス学科", "公共政策学科", "マネジメントシステム学科"] },
+          { name: "人文社会学部", depts: ["心理教育学科", "現代社会学科", "国際文化学科"] },
+          { name: "芸術工学部", depts: ["情報環境デザイン学科", "産業イノベーションデザイン学科", "建築都市デザイン学科"] },
+          { name: "看護学部", depts: ["看護学科"] },
+          { name: "総合生命理学部", depts: ["総合生命理学科"] },
+          { name: "データサイエンス学部", depts: ["データサイエンス学科"] }
+        ]
+      },
+      "meizyou": {
+        name: "名城大学",
+        faculties: [
+          { name: "法学部", depts: ["法学科"] },
+          { name: "経営学部", depts: ["経営学科", "国際経営学科"] },
+          { name: "経済学部", depts: ["産業社会学科", "経済学科"] },
+          { name: "外国語学部", depts: ["国際英語学科"] },
+          { name: "人間学部", depts: ["人間学科"] },
+          { name: "都市情報学部", depts: ["都市情報学科"] },
+          { name: "理工学部", depts: ["数学科", "情報工学科", "電気電子工学科", "材料機能工学科", "応用化学科", "機械工学科", "交通機械工学科", "建築学科", "環境創造学科"] },
+          { name: "農学部", depts: ["生物資源学科", "応用生物化学科", "生物環境科学科"] },
+          { name: "薬学部", depts: ["薬学科"] }
+        ]
+      },
+      "aichi": {
+        name: "愛知大学",
+        faculties: [
+          { name: "法学部", depts: ["法学科"] },
+          { name: "経済学部", depts: ["経済学科"] },
+          { name: "経営学部", depts: ["経営学科", "会計ファイナンス学科"] },
+          { name: "現代中国学部", depts: ["現代中国学科"] },
+          { name: "国際コミュニケーション学部", depts: ["英語学科", "国際教養学科"] },
+          { name: "文学部", depts: ["歴史地理学科", "日本語日本文学科", "人文社会学科", "心理学科"] },
+          { name: "地域政策学部", depts: ["地域政策学科"] }
+        ]
+      },
+      "tyuukyou": {
+        name: "中京大学",
+        faculties: [
+          { name: "国際英語学部", depts: ["国際英語学科"] },
+          { name: "国際学部", depts: ["国際学科"] },
+          { name: "文学部", depts: ["日本文学科", "歴史文化学科", "言語表現学科"] },
+          { name: "心理学部", depts: ["心理学科"] },
+          { name: "法学部", depts: ["法律学科"] },
+          { name: "経済学部", depts: ["経済学科"] },
+          { name: "経営学部", depts: ["経営学科"] },
+          { name: "総合政策学部", depts: ["総合政策学科"] },
+          { name: "現代社会学部", depts: ["現代社会学科"] },
+          { name: "工学部", depts: ["機械システム工学科", "電気電子工学科", "情報工学科", "メディア工学科"] },
+          { name: "スポーツ科学部", depts: ["スポーツ健康科学科", "競技スポーツ科学科", "スポーツ教育学科"] }
+        ]
+      },
+      "nanzan": {
+        name: "南山大学",
+        faculties: [
+          { name: "人文学部", depts: ["キリスト教学科", "人類文化学科", "心理人間学科", "日本文化学科"] },
+          { name: "外国語学部", depts: ["英米学科", "スペイン・ラテンアメリカ学科", "フランス学科", "ドイツ学科", "アジア学科"] },
+          { name: "経済学部", depts: ["経済学科"] },
+          { name: "経営学部", depts: ["経営学科"] },
+          { name: "法学部", depts: ["法律学科"] },
+          { name: "総合政策学部", depts: ["総合政策学科"] },
+          { name: "理工学部", depts: ["システム数理学科", "ソフトウェア工学科", "機械電子制御工学科"] },
+          { name: "国際教養学部", depts: ["国際教養学科"] }
+        ]
+      },
+      "tyuubu": {
+        name: "中部大学",
+        faculties: [
+          { name: "理工学部", depts: ["数理・物理サイエンス学科", "AIロボティクス学科", "宇宙航空理工学科"] },
+          { name: "工学部", depts: ["機械工学科", "都市建設工学科", "建築学科", "応用化学科", "情報工学科", "電気電子システム工学科"] },
+          { name: "経営情報学部", depts: ["経営総合学科"] },
+          { name: "国際関係学部", depts: ["国際学科"] },
+          { name: "人文学部", depts: ["日本語日本文化学科", "英語英米文化学科", "心理学科", "歴史地理学科", "メディア情報社会学科"] },
+          { name: "応用生物学部", depts: ["応用生物化学科", "環境生物科学科", "食品栄養科学科"] },
+          { name: "生命健康科学部", depts: ["生命医科学科", "保健看護学科", "理学療法学科", "作業療法学科", "臨床工学科", "スポーツ保健医療学科"] },
+          { name: "現代教育学部", depts: ["幼児教育学科", "現代教育学科"] }
+        ]
+      },
+      "aichigakuin": {
+        name: "愛知学院大学",
+        faculties: [
+          { name: "文学部", depts: ["歴史学科", "日本文化学科", "英語英米文化学科", "グローバル英語学科", "宗教文化学科"] },
+          { name: "心身科学部", depts: ["心理学科", "健康科学科", "健康栄養学科"] },
+          { name: "商学部", depts: ["商学科"] },
+          { name: "経営学部", depts: ["経営学科"] },
+          { name: "経済学部", depts: ["経済学科"] },
+          { name: "法学部", depts: ["法律学科", "現代社会法学科"] },
+          { name: "総合政策学部", depts: ["総合政策学科"] },
+          { name: "薬学部", depts: ["医療薬学科"] },
+          { name: "歯学部", depts: ["歯学科"] }
+        ]
+      },
+      "aichikougyou": {
+        name: "愛知工業大学",
+        faculties: [
+          { name: "工学部", depts: ["電気学科", "応用化学科", "機械学科", "土木工学科", "建築学科"] },
+          { name: "経営学部", depts: ["経営学科"] },
+          { name: "情報科学部", depts: ["情報科学科"] }
+        ]
+      },
+      "toyotakougyou": {
+        name: "豊田工業大学",
+        faculties: [
+          { name: "工学部", depts: ["先端工学基礎学科"] }
+        ]
+      },
+      "sugiyama": {
+        name: "椙山女学園大学",
+        faculties: [
+          { name: "生活科学部", depts: ["管理栄養学科", "生活環境デザイン学科"] },
+          { name: "国際コミュニケーション学部", depts: ["国際言語コミュニケーション学科", "表現文化学科"] },
+          { name: "人間関係学部", depts: ["人間関係学科", "心理学科"] },
+          { name: "文化情報学部", depts: ["文化情報学科", "メディア情報学科"] },
+          { name: "現代マネジメント学部", depts: ["現代マネジメント学科"] },
+          { name: "教育学部", depts: ["子ども発達学科"] },
+          { name: "看護学部", depts: ["看護学科"] }
+        ]
+      },
+      "kinzyou": {
+        name: "金城学院大学",
+        faculties: [
+          { name: "文学部", depts: ["日本語日本文化学科", "英語英米文化学科", "外国語コミュニケーション学科", "音楽芸術学科"] },
+          { name: "生活環境学部", depts: ["生活マネジメント学科", "環境デザイン学科", "食環境栄養学科"] },
+          { name: "国際情報学部", depts: ["国際情報学科"] },
+          { name: "人間科学部", depts: ["現代子ども教育学科", "多元心理学科", "コミュニティ福祉学科"] },
+          { name: "薬学部", depts: ["薬学科"] },
+          { name: "看護学部", depts: ["看護学科"] }
+        ]
+      },
+      "aichisyukutoku": {
+        name: "愛知淑徳大学",
+        faculties: [
+          { name: "文学部", depts: ["国文学科", "総合英語学科", "教育学科"] },
+          { name: "人間情報学部", depts: ["人間情報学科"] },
+          { name: "心理学部", depts: ["心理学科"] },
+          { name: "創造表現学部", depts: ["創造表現学科", "建築・インテリアデザイン専攻"] },
+          { name: "健康医療科学部", depts: ["医療貢献学科", "スポーツ・健康医科学科"] },
+          { name: "福祉貢献学部", depts: ["福祉貢献学科"] },
+          { name: "交流文化学部", depts: ["交流文化学科"] },
+          { name: "ビジネス学部", depts: ["ビジネス学科"] },
+          { name: "グローバル・コミュニケーション学部", depts: ["グローバル・コミュニケーション学科"] }
+        ]
+      },
+      "huzitaika": {
+        name: "藤田医科大学",
+        faculties: [
+          { name: "医学部", depts: ["医学科"] },
+          { name: "医療科学部", depts: ["医療検査学科", "臨床検査学科", "放射線学科"] },
+          { name: "保健衛生学部", depts: ["看護学科", "リハビリテーション学科"] }
+        ]
+      },
+      "aichiika": {
+        name: "愛知医科大学",
+        faculties: [
+          { name: "医学部", depts: ["医学科"] },
+          { name: "看護学部", depts: ["看護学科"] }
+        ]
+      },
+      "nihonhukusi": {
+        name: "日本福祉大学",
+        faculties: [
+          { name: "社会福祉学部", depts: ["社会福祉学科"] },
+          { name: "教育・心理学部", depts: ["子ども発達学科", "心理学科"] },
+          { name: "スポーツ科学部", depts: ["スポーツ科学科"] },
+          { name: "健康科学部", depts: ["リハビリテーション学科", "福祉工学科"] },
+          { name: "経済学部", depts: ["経済学科"] },
+          { name: "国際福祉開発学部", depts: ["国際福祉開発学科"] },
+          { name: "看護学部", depts: ["看護学科"] }
+        ]
+      },
+      "nagoyagaikokugo": {
+        name: "名古屋外国語大学",
+        faculties: [
+          { name: "外国語学部", depts: ["英米語学科", "フランス語学科", "中国語学科"] },
+          { name: "現代国際学部", depts: ["現代英語学科", "国際教養学科", "グローバルビジネス学科"] },
+          { name: "世界共生学部", depts: ["世界共生学科"] },
+          { name: "世界教養学部", depts: ["世界教養学科"] }
+        ]
+      },
+      "nagoyagakugei": {
+        name: "名古屋学芸大学",
+        faculties: [
+          { name: "管理栄養学部", depts: ["管理栄養学科"] },
+          { name: "ヒューマンケア学部", depts: ["子どもケア学科", "看護学科"] },
+          { name: "メディア造形学部", depts: ["映像メディア学科", "デザイン学科", "ファッション造形学科"] }
+        ]
+      },
+      "nagoyagakuin": {
+        name: "名古屋学院大学",
+        faculties: [
+          { name: "経済学部", depts: ["経済学科"] },
+          { name: "現代社会学部", depts: ["現代社会学科"] },
+          { name: "商学部", depts: ["商学科"] },
+          { name: "法学部", depts: ["法学科"] },
+          { name: "外国語学部", depts: ["英米語学科"] },
+          { name: "国際文化学部", depts: ["国際文化学科"] },
+          { name: "スポーツ健康学部", depts: ["スポーツ健康学科"] },
+          { name: "リハビリテーション学部", depts: ["理学療法学科"] }
+        ]
+      },
+      "nagoyakeizai": {
+        name: "名古屋経済大学",
+        faculties: [
+          { name: "経済学部", depts: ["現代経済学科"] },
+          { name: "経営学部", depts: ["経営学科"] },
+          { name: "法学部", depts: ["ビジネス法学科"] },
+          { name: "人間生活科学部", depts: ["教育保育学科", "管理栄養学科"] }
+        ]
+      },
+      "nagoyasyouka": {
+        name: "名古屋商科大学",
+        faculties: [
+          { name: "経済学部", depts: ["経済学科"] },
+          { name: "経営学部", depts: ["経営学科"] },
+          { name: "商学部", depts: ["マーケティング学科", "会計ファイナンス学科"] },
+          { name: "国際学部", depts: ["グローバル教養学科"] }
+        ]
+      },
+      "nagoyageizyutu": {
+        name: "名古屋芸術大学",
+        faculties: [
+          { name: "芸術学部", depts: ["芸術学科"] },
+          { name: "教育学部", depts: ["子ども学科"] }
+        ]
+      },
+      "nagoyaongaku": {
+        name: "名古屋音楽大学",
+        faculties: [
+          { name: "音楽学部", depts: ["音楽学科"] }
+        ]
+      },
+      "nagoyazoukei": {
+        name: "名古屋造形大学",
+        faculties: [
+          { name: "造形学部", depts: ["造形学科"] }
+        ]
+      },
+      "nagoyabunri": {
+        name: "名古屋文理大学",
+        faculties: [
+          { name: "健康生活学部", depts: ["健康栄養学科", "フードビジネス学科"] },
+          { name: "情報メディア学部", depts: ["情報メディア学科"] }
+        ]
+      },
+      "nagoyaaoi": {
+        name: "名古屋葵大学",
+        faculties: [
+          { name: "家政学部", depts: ["食物栄養学科", "生活環境学科"] },
+          { name: "健康科学部", depts: ["健康栄養学科", "看護学科"] },
+          { name: "医療科学部", depts: ["理学療法学科", "作業療法学科"] } 
+        ]
+      },
+      "nagoyayanagisiro": {
+        name: "名古屋柳城女子大学",
+        faculties: [
+          { name: "こども学部", depts: ["こども学科"] }
+        ]
+      },
+      "nagoyasangyou": {
+        name: "名古屋産業大学",
+        faculties: [
+          { name: "現代ビジネス学部", depts: ["現代ビジネス学科", "経営専門職学科"] }
+        ]
+      },
+      "nagoyakokusai": {
+        name: "名古屋国際工科専門職大学",
+        faculties: [
+          { name: "工科学部", depts: ["情報工学科", "デジタルエンタテインメント学科"] }
+        ]
+      },
+      "aichigakusen": {
+        name: "愛知学泉大学",
+        faculties: [
+          { name: "家政学部", depts: ["家政学科", "管理栄養士専攻"] },
+          { name: "ライフスタイル学部", depts: ["ライフスタイル学科"] }
+        ]
+      },
+      "aichikouka": {
+        name: "愛知工科大学",
+        faculties: [
+          { name: "工学部", depts: ["機械システム工学科", "電子ロボット工学科", "情報メディア学科"] }
+        ]
+      },
+      "aichisangyou": {
+        name: "愛知産業大学",
+        faculties: [
+          { name: "造形学部", depts: ["デザイン学科", "建築学科"] },
+          { name: "経営学部", depts: ["総合経営学科"] }
+        ]
+      },
+      "aichitouhou": {
+        name: "愛知東邦大学",
+        faculties: [
+          { name: "経営学部", depts: ["地域ビジネス学科"] },
+          { name: "人間健康学部", depts: ["人間健康学科"] },
+          { name: "教育学部", depts: ["子ども発達学科"] }
+        ]
+      },
+      "aichibunkyou": {
+        name: "愛知文教大学",
+        faculties: [
+          { name: "人文学部", depts: ["人文学科"] }
+        ]
+      },
+      "aichimizuho": {
+        name: "愛知みずほ大学",
+        faculties: [
+          { name: "人間科学部", depts: ["心身健康科学科"] }
+        ]
+      },
+      "itinomiya": {
+        name: "一宮研伸大学",
+        faculties: [
+          { name: "看護学部", depts: ["看護学科"] }
+        ]
+      },
+      "oukagakuen": {
+        name: "桜花学園大学",
+        faculties: [
+          { name: "保育学部", depts: ["保育学科"] },
+          { name: "学芸学部", depts: ["英語学科"] },
+          { name: "国際キャリア学部", depts: ["国際キャリア学科"] }
+        ]
+      },
+      "okazakizyosi": {
+        name: "岡崎女子大学",
+        faculties: [
+          { name: "子ども教育学部", depts: ["子ども教育学科"] }
+        ]
+      },
+      "sigakukan": {
+        name: "至学館大学",
+        faculties: [
+          { name: "健康科学部", depts: ["健康スポーツ科学科", "栄養科学科", "こども健康・教育学科"] }
+        ]
+      },
+      "syuubun": {
+        name: "修文大学",
+        faculties: [
+          { name: "健康栄養学部", depts: ["管理栄養学科"] },
+          { name: "看護学部", depts: ["看護学科"] },
+          { name: "医療科学部", depts: ["臨床検査学科"] }
+        ]
+      },
+      "seizyou": {
+        name: "星城大学",
+        faculties: [
+          { name: "経営学部", depts: ["経営学科"] },
+          { name: "リハビリテーション学部", depts: ["リハビリテーション学科"] }
+        ]
+      },
+      "daidou": {
+        name: "大同大学",
+        faculties: [
+          { name: "工学部", depts: ["機械システム工学科", "電気電子工学科", "建築学科"] },
+          { name: "情報学部", depts: ["情報システム学科", "情報デザイン学科"] }
+        ]
+      },
+      "toukaigakuen": {
+        name: "東海学園大学",
+        faculties: [
+          { name: "経営学部", depts: ["経営学科"] },
+          { name: "人文学部", depts: ["人文学科"] },
+          { name: "心理学部", depts: ["心理学科"] },
+          { name: "教育学部", depts: ["教育学科"] },
+          { name: "スポーツ健康科学部", depts: ["スポーツ健康科学科"] },
+          { name: "健康栄養学部", depts: ["管理栄養学科"] }
+        ]
+      },
+      "douhou": {
+        name: "同朋大学",
+        faculties: [
+          { name: "文学部", depts: ["仏教学科", "人文学科"] },
+          { name: "社会福祉学部", depts: ["社会福祉学科"] }
+        ]
+      },
+      "toyohasisouzou": {
+        name: "豊橋創造大学",
+        faculties: [
+          { name: "保健医療学部", depts: ["理学療法学科", "看護学科"] },
+          { name: "経営学部", depts: ["経営学科"] }
+        ]
+      },
+      "nihonsekizyuzi": {
+        name: "日本赤十字豊田看護大学",
+        faculties: [
+          { name: "看護学部", depts: ["看護学科"] }
+        ]
+      },
+      "ningenkankyou": {
+        name: "人間環境大学",
+        faculties: [
+          { name: "心理学部", depts: ["心理学科"] },
+          { name: "環境科学部", depts: ["フィールド生態学科"] },
+          { name: "看護学部", depts: ["看護学科"] },
+          { name: "松山看護学部", depts: ["看護学科"] },
+          { name: "総合心理学部", depts: ["総合心理学科"] }
+        ]
+      },
+
+      // 中学校データ 
+      "1": { name: "愛知教育大学附属名古屋中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "2": { name: "愛知教育大学附属岡崎中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "3": { name: "愛知総合工科高等学校附属中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "4": { name: "愛知中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "5": { name: "愛知工業大学名電中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "6": { name: "愛知淑徳中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "7": { name: "愛知みずほ大学瑞穂中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "8": { name: "桜花学園中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "9": { name: "海陽中等教育学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "10": { name: "金城学院中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "11": { name: "椙山女学園中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "12": { name: "星城中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "13": { name: "聖霊中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "14": { name: "聖カピタニオ女子中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "15": { name: "大成中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "16": { name: "滝中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "17": { name: "中部大学春日丘中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "18": { name: "東海中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "19": { name: "名古屋中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "20": { name: "名古屋国際中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "21": { name: "名古屋女子大学中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "22": { name: "名古屋経済大学市邨中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "23": { name: "名古屋経済大学高蔵中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "24": { name: "南山中学校男子部", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "25": { name: "南山中学校女子部", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "26": { name: "日本福祉大学付属中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "27": { name: "愛知産業大学三河中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "28": { name: "名古屋市立千種台中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "29": { name: "名古屋市立東星中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "30": { name: "名古屋市立城山中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "31": { name: "名古屋市立桜山中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "32": { name: "名古屋市立振甫中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "33": { name: "名古屋市立千種中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "34": { name: "名古屋市立若水中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "35": { name: "名古屋市立冨士中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "36": { name: "名古屋市立あずま中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "37": { name: "名古屋市立桜丘中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "38": { name: "名古屋市立山吹中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "39": { name: "名古屋市立矢田中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "40": { name: "名古屋市立大曽根中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "41": { name: "名古屋市立八王子中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "42": { name: "名古屋市立北陵中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "43": { name: "名古屋市立志賀中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "44": { name: "名古屋市立若葉中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },                        
+      "45": { name: "名古屋市立楠中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "46": { name: "名古屋市立楠中学校分校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "47": { name: "名古屋市立北中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "48": { name: "名古屋市立浄心中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "49": { name: "名古屋市立名塚中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "50": { name: "名古屋市立菊井中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "51": { name: "名古屋市立天神山中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "52": { name: "名古屋市立平田中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "53": { name: "名古屋市立山田中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "54": { name: "名古屋市立山田東中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "55": { name: "名古屋市立笹島中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "56": { name: "名古屋市立黄金中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "57": { name: "名古屋市立笈瀬中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "58": { name: "名古屋市立日比津中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "59": { name: "名古屋市立豊国中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "60": { name: "名古屋市立豊正中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "61": { name: "名古屋市立御田中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "62": { name: "名古屋市立丸の内中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "63": { name: "名古屋市立前津中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "64": { name: "名古屋市立白山中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "65": { name: "名古屋市立伊勢山中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "66": { name: "名古屋市立北山中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "67": { name: "名古屋市立川名中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "68": { name: "名古屋市立駒方中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "69": { name: "名古屋市立円上中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "70": { name: "名古屋市立汐路中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "71": { name: "名古屋市立瑞穂ヶ丘中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "72": { name: "名古屋市立津賀田中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "73": { name: "名古屋市立田光中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "74": { name: "名古屋市立萩山中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "75": { name: "名古屋市立宮中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "76": { name: "名古屋市立沢上中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "77": { name: "名古屋市立日比野中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "78": { name: "名古屋市立一柳中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "79": { name: "名古屋市立高杉中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "80": { name: "名古屋市立昭和橋中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "81": { name: "名古屋市立長良中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "82": { name: "名古屋市立山王中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "83": { name: "名古屋市立一色中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "84": { name: "名古屋市立供米田中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "85": { name: "名古屋市立助光中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "86": { name: "名古屋市立富田中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "87": { name: "名古屋市立はとり中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "88": { name: "名古屋市立東港中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "89": { name: "名古屋市立港南中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },       
+      "90": { name: "名古屋市立港北中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "91": { name: "名古屋市立宝神中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "92": { name: "名古屋市立南陽中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "93": { name: "名古屋市立当知中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "94": { name: "名古屋市立南陽東中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "95": { name: "名古屋市立新郊中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "96": { name: "名古屋市立桜田中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "97": { name: "名古屋市立大江中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "98": { name: "名古屋市立南光中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "99": { name: "名古屋市立名南中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "100": { name: "名古屋市立本城中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "101": { name: "名古屋市立南稜中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "102": { name: "名古屋市立明豊中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "103": { name: "名古屋市立守山中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "104": { name: "名古屋市立守山西中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "105": { name: "名古屋市立守山東中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "106": { name: "名古屋市立大森中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "107": { name: "名古屋市立志段味中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "108": { name: "名古屋市立吉根中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "109": { name: "名古屋市立森孝中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "110": { name: "名古屋市立鳴海中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "111": { name: "名古屋市立有松中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "112": { name: "名古屋市立大高中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "113": { name: "名古屋市立南陵中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "114": { name: "名古屋市立東陵中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "115": { name: "名古屋市立扇台中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "116": { name: "名古屋市立千鳥丘中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "117": { name: "名古屋市立神の倉中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "118": { name: "名古屋市立滝ノ水中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "119": { name: "名古屋市立左京山中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "120": { name: "名古屋市立鎌倉台中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "121": { name: "名古屋市立神沢中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "122": { name: "名古屋市立神丘中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "123": { name: "名古屋市立高針台中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "124": { name: "名古屋市立猪高中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "125": { name: "名古屋市立藤森中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "126": { name: "名古屋市立香流中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "127": { name: "名古屋市立猪高台中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "128": { name: "名古屋市立牧の池中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "129": { name: "名古屋市立天白中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "130": { name: "名古屋市立御幸山中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "131": { name: "名古屋市立植田中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "132": { name: "名古屋市立平針中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "133": { name: "名古屋市立南天白中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "134": { name: "名古屋市立原中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] }, 
+      "135": { name: "名古屋市立久方中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "136": { name: "一宮市立中部中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "137": { name: "一宮市立南部中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "138": { name: "一宮市立北部中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "139": { name: "一宮市立大和中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "140": { name: "一宮市立奥中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "141": { name: "一宮市立萩原中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "142": { name: "一宮市立千秋中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "143": { name: "一宮市立大和南中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "144": { name: "一宮市立今伊勢中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "145": { name: "一宮市立葉栗中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "146": { name: "一宮市立西成中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "147": { name: "一宮市立丹陽中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "148": { name: "一宮市立浅井中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "149": { name: "一宮市立北方中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "150": { name: "一宮市立西成東部中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "151": { name: "一宮市立木曽川中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "152": { name: "一宮市立尾西第一中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "153": { name: "一宮市立尾西第二中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "154": { name: "一宮市立尾西第三中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "155": { name: "瀬戸市立水無瀬中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "156": { name: "瀬戸市立幡山中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "157": { name: "瀬戸市立品野中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "158": { name: "瀬戸市立光陵中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "159": { name: "瀬戸市立水野中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "160": { name: "瀬戸市立南山中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "161": { name: "瀬戸市立にじの丘中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "162": { name: "春日井市立東部中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "163": { name: "春日井市立西部中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "164": { name: "春日井市立中部中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "165": { name: "春日井市立坂下中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "166": { name: "春日井市立高蔵寺中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "167": { name: "春日井市立西部中学校分校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "168": { name: "春日井市立高森台中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "169": { name: "春日井市立松原中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "170": { name: "春日井市立知多中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "171": { name: "春日井市立鷹来中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "172": { name: "春日井市立柏原中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "173": { name: "春日井市立南城中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "174": { name: "春日井市立岩成台中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "175": { name: "春日井市立石尾台中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "176": { name: "春日井市立中部中学校分校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "177": { name: "犬山市立城東中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "178": { name: "犬山市立犬山中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "179": { name: "犬山市立南部中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },                        
+      "180": { name: "犬山市立東部中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "181": { name: "江南市立古知野中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "182": { name: "江南市立布袋中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "183": { name: "江南市立宮田中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "184": { name: "江南市立北部中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "185": { name: "江南市立西部中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "186": { name: "小牧市立小牧中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "187": { name: "小牧市立味岡中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "188": { name: "小牧市立篠岡中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "189": { name: "小牧市立北里中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "190": { name: "小牧市立応時中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "191": { name: "小牧市立岩崎中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "192": { name: "小牧市立桃陵中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "193": { name: "小牧市立光ヶ丘中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "194": { name: "小牧市立大城中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "195": { name: "稲沢市立稲沢中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "196": { name: "稲沢市立明治中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "197": { name: "稲沢市立千代田中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "198": { name: "稲沢市立大里中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "199": { name: "稲沢市立治郎丸中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "200": { name: "稲沢市立稲沢西中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "201": { name: "稲沢市立大里東中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "202": { name: "稲沢市立祖父江中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "203": { name: "稲沢市立平和中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "204": { name: "尾張旭市立旭中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "205": { name: "尾張旭市立東中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "206": { name: "尾張旭市立西中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "207": { name: "岩倉市立岩倉中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "208": { name: "岩倉市立南部中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "209": { name: "豊明市立豊明中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "210": { name: "豊明市立栄中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "211": { name: "豊明市立沓掛中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "212": { name: "日進市立日進中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "213": { name: "日進市立日進西中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "214": { name: "日進市立日進東中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "215": { name: "日進市立日進北中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "216": { name: "清須市立新川中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "217": { name: "清須市立西枇杷島中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "218": { name: "清須市立清洲中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "219": { name: "清須市立春日中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "220": { name: "北名古屋市立師勝中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "221": { name: "北名古屋市立西春中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "222": { name: "北名古屋市立白木中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "223": { name: "北名古屋市立天神中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "224": { name: "北名古屋市立熊野中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },       
+      "225": { name: "北名古屋市立訓原中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "226": { name: "長久手市立長久手中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "227": { name: "長久手市立北中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "228": { name: "長久手市立南中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "229": { name: "東郷町立東郷中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "230": { name: "東郷町立春木中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "231": { name: "東郷町立諸輪中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "232": { name: "豊山町立豊山中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "233": { name: "大口町立大口中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "234": { name: "扶桑町立扶桑中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "235": { name: "扶桑町立扶桑北中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "236": { name: "津島市立藤浪中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "237": { name: "津島市立天王中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "238": { name: "津島市立暁中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "239": { name: "津島市立神守中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "240": { name: "愛西市立佐屋中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "241": { name: "愛西市立立田中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "242": { name: "愛西市立八開中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "243": { name: "愛西市立佐織中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "244": { name: "愛西市立佐織西中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "245": { name: "弥富市立弥富中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "246": { name: "弥富市立弥富北中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "247": { name: "弥富市立十四山中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "248": { name: "あま市立七宝中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "249": { name: "あま市立七宝北中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "250": { name: "あま市立美和中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "251": { name: "あま市立甚目寺中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "252": { name: "あま市立甚目寺南中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "253": { name: "大治町立大治中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "254": { name: "蟹江町立蟹江中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "255": { name: "蟹江町立蟹江北中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "256": { name: "飛島村立飛島学園", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "257": { name: "半田市立半田中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "258": { name: "半田市立乙川中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "259": { name: "半田市立亀崎中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "260": { name: "半田市立成岩中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "261": { name: "半田市立青山中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "262": { name: "常滑市立常滑中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "263": { name: "常滑市立鬼崎中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "264": { name: "常滑市立南陵中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "265": { name: "常滑市立青海中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "266": { name: "東海市立横須賀中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "267": { name: "東海市立上野中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "268": { name: "東海市立平洲中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "269": { name: "東海市立富木島中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "270": { name: "東海市立名和中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "271": { name: "東海市立加木屋中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "272": { name: "大府市立大府中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "273": { name: "大府市立大府西中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "274": { name: "大府市立大府北中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "275": { name: "大府市立大府南中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "276": { name: "知多市立八幡中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "277": { name: "知多市立知多中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "278": { name: "知多市立東部中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "279": { name: "知多市立中部中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "280": { name: "知多市立旭南中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "281": { name: "阿久比町立阿久比中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "282": { name: "東浦町立東浦中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "283": { name: "東浦町立北部中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "284": { name: "東浦町立西部中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "285": { name: "南知多町立南知多中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "286": { name: "美浜町立美浜中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "287": { name: "武豊町立富貴中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "288": { name: "武豊町立武豊中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "289": { name: "岡崎市立甲山中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "290": { name: "岡崎市立美川中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "291": { name: "岡崎市立南中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "292": { name: "岡崎市立竜海中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "293": { name: "岡崎市立葵中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "294": { name: "岡崎市立城北中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "295": { name: "岡崎市立福岡中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "296": { name: "岡崎市立東海中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "297": { name: "岡崎市立河合中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "298": { name: "岡崎市立常磐中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "299": { name: "岡崎市立岩津中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "300": { name: "岡崎市立矢作中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "301": { name: "岡崎市立六ツ美中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "302": { name: "岡崎市立矢作北中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "303": { name: "岡崎市立新香山中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "304": { name: "岡崎市立六ツ美北中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "305": { name: "岡崎市立湘南中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "306": { name: "岡崎市立北中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "307": { name: "岡崎市立額田中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "308": { name: "岡崎市立緑丘中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "309": { name: "碧南市立新川中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "310": { name: "碧南市立中央中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "311": { name: "碧南市立南中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "312": { name: "碧南市立東中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "313": { name: "碧南市立西端中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },                        
+      "314": { name: "刈谷市立刈谷南中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "315": { name: "刈谷市立刈谷東中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "316": { name: "刈谷市立富士松中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "317": { name: "刈谷市立雁が音中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "318": { name: "刈谷市立依佐美中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "319": { name: "刈谷市立朝日中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "320": { name: "豊田市立崇化館中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "321": { name: "豊田市立朝日丘中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "322": { name: "豊田市立豊南中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "323": { name: "豊田市立高橋中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "324": { name: "豊田市立上郷中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "325": { name: "豊田市立高岡中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "326": { name: "豊田市立保見中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "327": { name: "豊田市立猿投中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "328": { name: "豊田市立猿投台中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "329": { name: "豊田市立石野中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "330": { name: "豊田市立松平中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "331": { name: "豊田市立竜神中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "332": { name: "豊田市立美里中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "333": { name: "豊田市立城北中学校分校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "334": { name: "豊田市立逢妻中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "335": { name: "豊田市立若園中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "336": { name: "豊田市立梅坪台中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "337": { name: "豊田市立前林中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "338": { name: "豊田市立益富中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "339": { name: "豊田市立末野原中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "340": { name: "豊田市立井郷中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "341": { name: "豊田市立藤岡中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "342": { name: "豊田市立藤岡南中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "343": { name: "豊田市立小原中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "344": { name: "豊田市立足助中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "345": { name: "豊田市立下山中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "346": { name: "豊田市立旭中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "347": { name: "豊田市立稲武中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "348": { name: "安城市立安城南中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "349": { name: "安城市立安城北中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "350": { name: "安城市立明祥中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "351": { name: "安城市立桜井中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "352": { name: "安城市立安城西中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "353": { name: "安城市立篠目中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "354": { name: "安城市立東山中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "355": { name: "安城市立安祥中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "356": { name: "西尾市立西尾中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "357": { name: "西尾市立鶴城中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "358": { name: "西尾市立平坂中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },       
+      "359": { name: "西尾市立寺津中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "360": { name: "西尾市立福地中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "361": { name: "西尾市立東部中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "362": { name: "西尾市立一色中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "363": { name: "西尾市立吉良中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "364": { name: "西尾市立幡豆中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "365": { name: "知立市立知立中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "366": { name: "知立市立竜北中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "367": { name: "知立市立知立南中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "368": { name: "高浜市立高浜中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "369": { name: "高浜市立高浜南中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "370": { name: "みよし市立三好中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "371": { name: "みよし市立北中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "372": { name: "みよし市立南中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "373": { name: "みよし市立三好丘中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "374": { name: "幸田町立幸田中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "375": { name: "幸田町立北部中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "376": { name: "幸田町立南部中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "377": { name: "豊橋市立八町中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "378": { name: "豊橋市立中部中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "379": { name: "豊橋市立羽田中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "380": { name: "豊橋市立本郷中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "381": { name: "豊橋市立南部中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "382": { name: "豊橋市立高師台中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "383": { name: "豊橋市立青陵中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "384": { name: "豊橋市立東部中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "385": { name: "豊橋市立豊岡中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "386": { name: "豊橋市立東陵中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "387": { name: "豊橋市立豊城中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "388": { name: "豊橋市立南稜中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "389": { name: "豊橋市立五並中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "390": { name: "豊橋市立二川中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "391": { name: "豊橋市立北部中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "392": { name: "豊橋市立吉田方中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "393": { name: "豊橋市立牟呂中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "394": { name: "豊橋市立前芝中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "395": { name: "豊橋市立石巻中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "396": { name: "豊橋市立南陽中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "397": { name: "豊橋市立桜丘中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "398": { name: "豊橋市立章南中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "399": { name: "豊川市立東部中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "400": { name: "豊川市立南部中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "401": { name: "豊川市立西部中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "402": { name: "豊川市立代田中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "403": { name: "豊川市立金屋中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },  
+      "404": { name: "豊川市立一宮中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] }, 
+      "405": { name: "豊川市立音羽中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] }, 
+      "406": { name: "豊川市立御津中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] }, 
+      "407": { name: "豊川市立小坂井中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] }, 
+      "408": { name: "蒲郡市立蒲郡中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] }, 
+      "409": { name: "蒲郡市立三谷中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] }, 
+      "410": { name: "蒲郡市立塩津中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] }, 
+      "411": { name: "蒲郡市立大塚中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] }, 
+      "412": { name: "蒲郡市立中部中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] }, 
+      "413": { name: "蒲郡市立形原中学校", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] },
+      "414": { name: "蒲郡市立西浦中", faculties: [{ name: "国語"},{ name: "数学"},{ name: "理科"},{ name: "社会"},{ name: "英語"},{ name: "音楽"},{ name: "美術"},{ name: "技術家庭科"},{ name: "保健体育"},] }
+    };
+
+/*画面表示ロジック*/
+    const params = new URLSearchParams(window.location.search);
+    const univId = params.get('id');
+    const facIndex = params.get('f_idx');
+
+    const titleEl = document.getElementById('main-title');
+    const subTitleEl = document.getElementById('sub-title');
+    const listEl = document.getElementById('content-list');
+
+    if (univData[univId]) {
+      const data = univData[univId];
+      titleEl.textContent = data.name;
+
+      // 学科選択画面 
+      if (facIndex !== null) {
+        const faculty = data.faculties[facIndex];
+        if (faculty) {
+          subTitleEl.textContent = faculty.name + " / 学科を選択";
+          
+          if(faculty.depts.length === 0){
+             listEl.innerHTML = "<li>データ準備中です...</li>";
+          } else {
+            faculty.depts.forEach(deptName => {
+              const li = document.createElement('li');
+              li.innerHTML = `<a href="#">
+                                <span>${deptName}</span>
+                                <span class="arrow-icon">›</span>
+                              </a>`;
+              listEl.appendChild(li);
+            });
+          }
+        }
+
+      // 学部選択画面
+      } else {
+        subTitleEl.textContent = "学部を選択してください";
+        data.faculties.forEach((faculty, index) => {
+          const li = document.createElement('li');
+          li.innerHTML = `<a href="aichi-detail.html?id=${univId}&f_idx=${index}">
+                            <span>${faculty.name}</span>
+                            <span class="arrow-icon">›</span>
+                          </a>`;
+          listEl.appendChild(li);
+        });
+      }
+
+    } else {
+      titleEl.textContent = "データが見つかりません";
+    }
+
+    function goBack() {
+      window.history.back();
+    }
+  </script>
+</body>
+</html>
