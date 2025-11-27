@@ -1,11 +1,10 @@
-// api/gemini.js
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-// Vercelの設定画面で登録するキーをここで読み込みます
+// Vercelの設定画面
 const API_KEY = process.env.GEMINI_API_KEY;
 
 export default async function handler(req, res) {
-  // 1. CORS設定（どのサイトからでもアクセスできるようにする）
+  // CORS設定
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -14,20 +13,21 @@ export default async function handler(req, res) {
     'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
   );
 
-  // プリフライトリクエスト（確認通信）への対応
+  // プリフライトリクエスト
   if (req.method === 'OPTIONS') {
     res.status(200).end();
     return;
   }
 
-  // 2. キーの確認
+  // キーの確認
   if (!API_KEY) {
-    return res.status(500).json({ error: 'APIキーが設定されていません' });
+    return res.status(500).json({ error: 'サーバー側のAPIキー設定がありません' });
   }
 
-  // 3. AI処理
+  // AI処理
   try {
     const { prompt, imageBase64, mimeType } = req.body;
+    
     const genAI = new GoogleGenerativeAI(API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 

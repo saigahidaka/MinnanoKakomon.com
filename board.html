@@ -263,7 +263,7 @@
              dateStr=`${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${d.getMinutes().toString().padStart(2,'0')}`;
           }
 
-          // ★文字数が多いか、AI解説(exam_result)の場合はボタンをつける
+          
           const isLong = (data.text.length > 100) || (data.type === 'exam_result');
           const commentClass = isLong ? 'post-text ai-comment' : 'post-text';
           const buttonHtml = isLong ? '<button class="toggle-btn">もっと見る ▼</button>' : '';
