@@ -5,7 +5,11 @@
   <title>みんなの過去問ドットコム - ログイン</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="/img/favicon-16.ico" sizes="16x16" type="image/png">
+  <link rel="icon" href="/img/favicon-16.ico" sizes="16x16" type="image/iso">
+  <link rel="icon" href="/img/favicon-32.ico" sizes="32x32" type="image/iso">
+  <link rel="icon" href="/img/favicon-48.ico" sizes="48x48" type="image/iso">
+  <link rel="icon" href="/img/favicon-128.ico" sizes="128x128" type="image/iso">
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon-180.ico">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,7 +20,7 @@
     main {
       max-width: 420px;
       width: 90%;
-      margin: 40px auto 60px; /* 上の余白を調整 */
+      margin: 40px auto 60px;
       padding: 40px;
       border-radius: 20px;
       background: #fff;
@@ -102,7 +106,6 @@
   
   <header class="site-header">
     <img src="img/header.png" alt="ヘッダー画像">
-    
     <div class="header-buttons">
       <a href="loginform.html" class="header-btn">ログイン</a>
       <a href="howtouse.html" class="header-btn">使い方</a>
@@ -113,7 +116,7 @@
   <main>
     <h1>ようこそ</h1>
       
-    <section id="auth-forms">
+    <section id="auth-forms" style="display:none;">
       <h2>アカウント作成</h2>
       <input id="su-email" type="email" placeholder="メールアドレス">
       <input id="su-pass" type="password" placeholder="パスワード（8文字以上）">
@@ -135,11 +138,11 @@
       </p>
     </section>
 
-    <p id="msg" class="small"></p>
+    <p id="msg" class="small">読み込み中...</p>
   </main>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
     import {
       getAuth,
       createUserWithEmailAndPassword,
@@ -149,7 +152,7 @@
       sendEmailVerification,
       GoogleAuthProvider,
       signInWithPopup
-    } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+    } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyD4ViHcFj-9334N1OGQR1v3dYN1RhWfzpg",
@@ -244,21 +247,27 @@
         });
     }
 
+    // ★Googleログイン処理（詳細なエラー表示付き）
     if(btnGoogle) {
         btnGoogle.addEventListener("click", async () => {
         try {
             const provider = new GoogleAuthProvider();
+            // 毎回アカウント選択画面を出す（トラブル防止）
             provider.setCustomParameters({ prompt: 'select_account' });
+            
             await signInWithPopup(auth, provider);
+            
             showMsg("Googleでログインしました", false);
             setTimeout(() => { window.location.href = 'index.html'; }, 1000);
             
-            } catch (e) {
-            console.error("Google Login Error:", e); 
+        } catch (e) {
+            console.error("Google Login Error:", e); // コンソールに詳細を出す
+            // 画面に詳細なエラーコードを表示して、原因を特定しやすくする
+            alert("Googleログインエラー\nCODE: " + e.code + "\nMSG: " + e.message);
             showMsg(translateError(e.code), true);
-            }
-             });
-            }
+        }
+        });
+    }
 
     if(linkReset) {
         linkReset.addEventListener("click", async (ev) => {
@@ -283,6 +292,7 @@
             window.location.href = 'index.html';
         }, 500); 
       } else {
+        msg.textContent = ""; // 読み込み中を消す
         if(authForms) authForms.style.display = "block";
       }
     });

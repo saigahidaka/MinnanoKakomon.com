@@ -5,7 +5,11 @@
   <title>みんなの過去問ドットコム - トップ</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="/img/favicon-16.ico" sizes="16x16" type="image/png">
+  <link rel="icon" href="/img/favicon-16.ico" sizes="16x16" type="image/iso">
+  <link rel="icon" href="/img/favicon-32.ico" sizes="32x32" type="image/iso">
+  <link rel="icon" href="/img/favicon-48.ico" sizes="48x48" type="image/iso">
+  <link rel="icon" href="/img/favicon-128.ico" sizes="128x128" type="image/iso">
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon-180.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
@@ -13,7 +17,6 @@
   <style> body { display: none; } </style>
 
   <style>
-    /* index.html専用のスタイル */
     main {
       margin-top: 100px; 
       margin-bottom: 50px;
@@ -25,9 +28,11 @@
     }
 
     #japan-map-image {
-      width: 100%;    
-      height: auto;   
-      display: inline-block;
+      width: 100%;        
+      max-width: 100%;    
+      height: auto;       
+      display: block;     
+      margin: 0 auto;     
       filter: drop-shadow(0 5px 15px rgba(0,0,0,0.1));
     }
 
@@ -106,10 +111,25 @@
 
   <script type="module" src="auth.js"></script>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/image-map-resizer/1.0.10/js/imageMapResizer.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/image-map-resizer/1.0.10/js/imageMapResizer.min.js"></script>
+  
   <script>
-    imageMapResize();
+    function startMapResize() {
+      const img = document.getElementById('japan-map-image');
+      if (img && img.clientWidth > 0) {
+        imageMapResize(); 
+      } else {
+        setTimeout(startMapResize, 100);
+      }
+    }
+
+    startMapResize();
+    // サイズ再計算
+    window.addEventListener('resize', () => {
+      imageMapResize();
+    });
   </script>
+</body>
   
 </body>
 </html>
