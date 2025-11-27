@@ -248,14 +248,17 @@
         btnGoogle.addEventListener("click", async () => {
         try {
             const provider = new GoogleAuthProvider();
+            provider.setCustomParameters({ prompt: 'select_account' });
             await signInWithPopup(auth, provider);
             showMsg("Googleでログインしました", false);
-            window.location.href = 'index.html';
-        } catch (e) {
+            setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+            
+            } catch (e) {
+            console.error("Google Login Error:", e); 
             showMsg(translateError(e.code), true);
-        }
-        });
-    }
+            }
+             });
+            }
 
     if(linkReset) {
         linkReset.addEventListener("click", async (ev) => {
