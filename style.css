@@ -17,6 +17,7 @@ body {
   font-size: clamp(14px, 2vw, 16px);
   overflow-x: hidden;
   padding-top: 80px; /* ヘッダーの高さ分 */
+  zoom: 0.9;
 }
 
 img {
@@ -25,73 +26,78 @@ img {
 }
 
 /* =========================================
-   ヘッダー設定
+   ヘッダー設定（高さ完全固定・はみ出し許可版）
    ========================================= */
 .site-header {
-  background: #fff; 
-  height: 80px;     
+  background: #fff;
+  /* ★高さを80pxに絶対固定！これ以上大きくなりません */
+  height: 80px; 
   
-  /* スクロールバー対策：幅指定ではなく左右固定 */
   position: fixed;
   top: 0;
   left: 0;
-  right: 0; 
+  right: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   
-  z-index: 1000;    
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
-  
+  /* 横並び設定 */
   display: flex;
-  align-items: center; 
-  justify-content: space-between;
+  align-items: center;
+  justify-content: flex-start;
   
-  /* 左右の余白（右側を少し広めに確保） */
+  /* ★重要：中身が多くても絶対に折り返さない（ボタンを右にはみ出させる） */
+  flex-wrap: nowrap; 
+  
+  /* はみ出た部分は隠す */
+  overflow: hidden; 
+  
   padding: 0 20px;
-  padding-right: 30px; 
 }
 
-.site-header img { 
-  height: auto;      
-  max-height: 50px;  
-  width: auto; 
-  display: block; 
-  object-fit: contain; 
-}
-
-.header-buttons { 
-  position: absolute; 
-  gap: 15px; 
-  /* ボタンエリアの位置調整 */
-  top: 18px;    
-  right: 40px;  
+.site-header img {
+  height: auto;
+  max-height: 50px;
+  width: auto;
+  display: block;
+  object-fit: contain;
   
-  display: flex;
-  padding-right: 50px;
+  /* ロゴは絶対に縮ませない */
+  flex-shrink: 0; 
+  margin-right: 20px; 
 }
 
-/* === ヘッダーボタン === */
+.header-buttons {
+  display: flex;
+  gap: 5px;
+  margin-right: 50px;
+  
+  /* ボタンエリアも縮ませない（そのまま右へフェードアウトさせる感じ） */
+  flex-shrink: 0; 
+}
+
+/* ボタン共通設定 */
 .header-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: #f5deb3; 
-  color: #fff; 
-  
-  width: 90px;       
-  height: 44px;       
-  
-  font-size: 15px; 
+  background-color: #f5deb3;
+  color: #fff;
+  width: 90px;
+  height: 44px;
+  font-size: 15px;
   font-weight: bold;
   border-radius: 6px;
   text-decoration: none;
   transition: all 0.3s ease;
-  white-space: nowrap; 
-  flex-shrink: 0; 
+  white-space: nowrap;
+  border: none;
 }
-
 .header-btn:hover {
   background-color: #deb887;
   transform: translateY(-2px);
 }
+
+
 
 /* =========================================
    AI解説の折りたたみ（アコーディオン）
@@ -161,24 +167,3 @@ img {
   border-color: #20b2aa;
 }
 
-/* =========================================
-   スマホ対応 (レスポンシブ)
-   ========================================= */
-@media (max-width: 600px) {
-  .site-header { padding: 0 15px; } 
-  
-  /* スマホでは絶対配置を解除して、自動整列に戻す */
-  .header-buttons {
-    position: static; 
-    margin-left: auto; 
-    gap: 8px; 
-    padding-right: 0;
-  }
-
-  .header-btn {
-    width: auto;      
-    padding: 0 10px;  
-    font-size: 13px;  
-    height: 36px;     
-  }
-}
