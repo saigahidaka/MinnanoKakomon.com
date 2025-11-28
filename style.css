@@ -40,12 +40,11 @@ img {
   z-index: 1000;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   
-  /* 横並び設定 */
   display: flex;
   align-items: center;
   justify-content: space-between;
   
-  /* ★重要：中身が多くても絶対に折り返さない（ボタンを右にはみ出させる） */
+
   flex-wrap: nowrap; 
   overflow: visible; 
   
