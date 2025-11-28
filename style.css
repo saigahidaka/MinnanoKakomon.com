@@ -185,7 +185,7 @@ img {
   .dropdown-menu {
     display: none; 
     position: absolute;
-    top: 40px;  
+    top: 90px;  
     right: 10px; 
     width: 200px; 
     background-color: #2b2b2b; 
@@ -243,4 +243,27 @@ img {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
   }
+
+@media screen and (max-width: 600px) {
+  
+  /* メニュー本体の調整 */
+  .dropdown-menu {
+    width: 90vw;       /* 画面幅の90%まで横幅を広げる */
+    right: 5vw;        /* 右から5%の位置（これでほぼ中央に来ます） */
+    top: 80px;         /* ヘッダーの高さに合わせて調整（被るようなら増やしてください） */
+    box-sizing: border-box;
+  }
+
+  /* リンク（ボタン）の押しやすさ調整 */
+  .dropdown-menu a {
+    padding: 15px 20px; /* 指でタップしやすいように縦幅を広げる */
+    font-size: 18px;    /* 文字サイズを少し大きくして見やすく */
+  }
+
+  /* アイコンと文字の間隔調整 */
+  .icon {
+    width: 30px;        /* アイコンエリアも少し広く */
+    font-size: 20px;
+  }
+}
 
