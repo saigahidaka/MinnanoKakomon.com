@@ -48,12 +48,8 @@
 <body>
   <header class="site-header">
     <img src="img/header.png" alt="ヘッダー画像">
-    <div class="header-buttons">
-      <a href="loginform.html" class="header-btn">ログイン</a>
-      <a href="howtouse.html" class="header-btn">使い方</a>
-      <a href="introduction.html" class="header-btn">製作者</a>
-      <button id="btn-logout" class="header-btn" style="background:#ff6b6b; cursor:pointer;">ログアウト</button>
-    </div>
+      <div class="menu-container">
+    <button class="menu-btn" onclick="toggleMenu()">☰</button>
   </header>    
 
   <main>
@@ -111,6 +107,58 @@
       <area target="" alt="那覇" title="那覇" href="/prefecture/naha.html" coords="95,741,134,797" shape="rect">
       <area target="" alt="福岡" title="福岡" href="/prefecture/hukuoka.html" coords="94,477,93,562,152,564,155,514,195,514,193,476" shape="poly">
     </map>
+
+
+    <div id="myDropdown" class="dropdown-menu">
+      <ul>
+        <li>
+          <a href="/login.html">
+            <span class="icon">🔑</span> ログイン
+          </a>
+        </li>
+        
+        <li class="divider"></li> <li>
+          <a href="/about.html">
+            <span class="icon">👤</span> 製作者について
+          </a>
+        </li>
+        <li>
+          <a href="/help.html">
+            <span class="icon">❓</span> 使い方
+          </a>
+        </li>
+
+        <li class="divider"></li> <li>
+          <a href="#" onclick="alert('ログアウトします')">
+            <span class="icon">👋</span> ログアウト
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <script>
+  /* --- JavaScript（動きの設定） --- */
+
+  // 1. ボタンを押したらメニューの表示/非表示を切り替える
+  function toggleMenu() {
+    document.getElementById("myDropdown").classList.toggle("show");
+  }
+
+  // 2. メニューの外側をクリックしたら閉じる（これ重要！）
+  window.onclick = function(event) {
+    if (!event.target.matches('.menu-btn')) {
+      var dropdowns = document.getElementsByClassName("dropdown-menu");
+      for (var i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+          openDropdown.classList.remove('show');
+        }
+      }
+    }
+  }
+</script>
+
+</body>
   </main>
 
   <script type="module" src="auth.js"></script>

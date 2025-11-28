@@ -43,13 +43,11 @@ img {
   /* 横並び設定 */
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   
   /* ★重要：中身が多くても絶対に折り返さない（ボタンを右にはみ出させる） */
   flex-wrap: nowrap; 
-  
-  /* はみ出た部分は隠す */
-  overflow: hidden; 
+  overflow: visible; 
   
   padding: 0 20px;
 }
@@ -166,4 +164,84 @@ img {
   color: white;
   border-color: #20b2aa;
 }
+
+.menu-container {
+    position: relative;
+    display: inline-block;
+  }
+
+  /* ハンバーガーボタンのデザイン */
+  .menu-btn {
+    background: transparent;
+    border: 2px solid #ccc; /* 枠線 */
+    color: #333;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 5px;
+  }
+
+/* ドロップダウンメニュー本体 */
+
+  .dropdown-menu {
+    display: none; 
+    position: absolute;
+    top: 40px;  
+    right: 10px; 
+    width: 200px; 
+    background-color: #2b2b2b; 
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5); 
+    border-radius: 8px; 
+    padding: 10px 0;
+    z-index: 100;
+  }
+
+  /* メニューを表示するためのクラス */
+  .dropdown-menu.show {
+    display: block; /* 表示する */
+    animation: fadeIn 0.2s ease-out; /* ふわっと出るアニメーション */
+  }
+
+  /* メニューの中身（リスト） */
+  .dropdown-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  /* 各リンクのデザイン */
+  .dropdown-menu a {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    text-decoration: none;
+    color: #e0e0e0;
+    font-size: 16px;
+    transition: background 0.2s;
+  }
+
+  /* マウスを乗せた時 */
+  .dropdown-menu a:hover {
+    background-color: #3d3d3d;
+  }
+
+  /* アイコン代わりの文字調整 */
+  .icon {
+    width: 25px;
+    margin-right: 10px;
+    text-align: center;
+  }
+
+  /* 区切り線 */
+  .divider {
+    height: 1px;
+    background-color: #444;
+    margin: 8px 0;
+  }
+
+  /* アニメーション定義 */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
