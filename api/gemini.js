@@ -26,7 +26,7 @@ module.exports = async (req, res) => {
     
     const genAI = new GoogleGenerativeAI(API_KEY);
     // 安定している 1.5-flash を使用
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
     const result = await model.generateContent([
       prompt,
@@ -42,5 +42,5 @@ module.exports = async (req, res) => {
     console.error("Gemini Error:", error);
     res.status(500).json({ error: error.message });
   }
-  
+
 };
