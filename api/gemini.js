@@ -1,9 +1,10 @@
+// api/gemini.js
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const API_KEY = process.env.GEMINI_API_KEY;
 
 module.exports = async (req, res) => {
-  // CORS設定
+  // CORS設定（そのまま）
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
@@ -25,8 +26,9 @@ module.exports = async (req, res) => {
     const { prompt, imageBase64 } = req.body;
     
     const genAI = new GoogleGenerativeAI(API_KEY);
-    // 安定している 1.5-flash を使用
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    
+    // ★ここを変更：モデル名を少し変えてみる
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
 
     const result = await model.generateContent([
       prompt,
@@ -42,5 +44,4 @@ module.exports = async (req, res) => {
     console.error("Gemini Error:", error);
     res.status(500).json({ error: error.message });
   }
-
 };
