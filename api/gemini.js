@@ -26,7 +26,7 @@ module.exports = async (req, res) => {
     
     const genAI = new GoogleGenerativeAI(API_KEY);
     // 安定している 1.5-flash を使用
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const result = await model.generateContent([
       prompt,
