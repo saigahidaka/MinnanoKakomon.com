@@ -1,14 +1,16 @@
 /* style.css */
 
 /* ★ズレ防止：すべての要素のサイズ計算を統一 */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
 /* === 全体の設定 === */
 body {
   font-family: 'Noto Sans JP', sans-serif;
-  background-color: #7fffd4; 
+  background-color: #7fffd4;
   margin: 0;
   color: #333;
   min-height: 100vh;
@@ -16,7 +18,7 @@ body {
   flex-direction: column;
   font-size: clamp(14px, 2vw, 16px);
   overflow-x: hidden;
-  padding-top: 80px; /* ヘッダーの高さ分 */
+  padding-top: 80px;
   zoom: 0.9;
 }
 
@@ -31,23 +33,23 @@ img {
 .site-header {
   background: #fff;
   /* ★高さを80pxに絶対固定！これ以上大きくなりません */
-  height: 80px; 
-  
+  height: 80px;
+
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
   display: flex;
   align-items: center;
   justify-content: space-between;
-  
 
-  flex-wrap: nowrap; 
-  overflow: visible; 
-  
+
+  flex-wrap: nowrap;
+  overflow: visible;
+
   padding: 0 20px;
 }
 
@@ -57,19 +59,19 @@ img {
   width: auto;
   display: block;
   object-fit: contain;
-  
+
   /* ロゴは絶対に縮ませない */
-  flex-shrink: 0; 
-  margin-right: 20px; 
+  flex-shrink: 0;
+  margin-right: 20px;
 }
 
 .header-buttons {
   display: flex;
   gap: 5px;
   margin-right: 50px;
-  
+
   /* ボタンエリアも縮ませない（そのまま右へフェードアウトさせる感じ） */
-  flex-shrink: 0; 
+  flex-shrink: 0;
 }
 
 /* ボタン共通設定 */
@@ -89,6 +91,7 @@ img {
   white-space: nowrap;
   border: none;
 }
+
 .header-btn:hover {
   background-color: #deb887;
   transform: translateY(-2px);
@@ -103,18 +106,21 @@ img {
 .ai-comment {
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 5; /* 5行制限 */
+  -webkit-line-clamp: 5;
+  /* 5行制限 */
   overflow: hidden;
   transition: all 0.3s ease;
 }
 
 .ai-comment.open {
-  -webkit-line-clamp: unset; /* 全表示 */
+  -webkit-line-clamp: unset;
+  /* 全表示 */
 }
 
 .toggle-btn {
   display: block;
-  margin: 5px auto 15px auto; /* 中央寄せ */
+  margin: 5px auto 15px auto;
+  /* 中央寄せ */
   background: none;
   border: none;
   color: #20b2aa;
@@ -139,7 +145,8 @@ img {
   margin-bottom: 15px;
   border-bottom: 1px solid #eee;
   padding-bottom: 10px;
-  flex-wrap: wrap; /* スマホでボタンが多くても折り返す */
+  flex-wrap: wrap;
+  /* スマホでボタンが多くても折り返す */
 }
 
 .filter-btn {
@@ -165,103 +172,117 @@ img {
 }
 
 .menu-container {
-    position: relative;
-    display: inline-block;
-  }
+  position: relative;
+  display: inline-block;
+}
 
-  /* ハンバーガーボタンのデザイン */
-  .menu-btn {
-    background: transparent;
-    border: 2px solid #ccc; /* 枠線 */
-    color: #333;
-    font-size: 24px;
-    cursor: pointer;
-    padding: 5px 10px;
-    border-radius: 5px;
-  }
+/* ハンバーガーボタンのデザイン */
+.menu-btn {
+  background: transparent;
+  border: 2px solid #ccc;
+  /* 枠線 */
+  color: #333;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
 
 /* ドロップダウンメニュー本体 */
 
-  .dropdown-menu {
-    display: none; 
-    position: absolute;
-    top: 90px;  
-    right: 10px; 
-    width: 200px; 
-    background-color: #2b2b2b; 
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5); 
-    border-radius: 8px; 
-    padding: 10px 0;
-    z-index: 100;
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 90px;
+  right: 10px;
+  width: 200px;
+  background-color: #2b2b2b;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+  padding: 10px 0;
+  z-index: 100;
+}
+
+/* メニューを表示するためのクラス */
+.dropdown-menu.show {
+  display: block;
+  /* 表示する */
+  animation: fadeIn 0.2s ease-out;
+  /* ふわっと出るアニメーション */
+}
+
+/* メニューの中身（リスト） */
+.dropdown-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* 各リンクのデザイン */
+.dropdown-menu a {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  text-decoration: none;
+  color: #e0e0e0;
+  font-size: 16px;
+  transition: background 0.2s;
+}
+
+/* マウスを乗せた時 */
+.dropdown-menu a:hover {
+  background-color: #3d3d3d;
+}
+
+/* アイコン代わりの文字調整 */
+.icon {
+  width: 25px;
+  margin-right: 10px;
+  text-align: center;
+}
+
+/* 区切り線 */
+.divider {
+  height: 1px;
+  background-color: #444;
+  margin: 8px 0;
+}
+
+/* アニメーション定義 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
   }
 
-  /* メニューを表示するためのクラス */
-  .dropdown-menu.show {
-    display: block; /* 表示する */
-    animation: fadeIn 0.2s ease-out; /* ふわっと出るアニメーション */
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-
-  /* メニューの中身（リスト） */
-  .dropdown-menu ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  /* 各リンクのデザイン */
-  .dropdown-menu a {
-    display: flex;
-    align-items: center;
-    padding: 12px 20px;
-    text-decoration: none;
-    color: #e0e0e0;
-    font-size: 16px;
-    transition: background 0.2s;
-  }
-
-  /* マウスを乗せた時 */
-  .dropdown-menu a:hover {
-    background-color: #3d3d3d;
-  }
-
-  /* アイコン代わりの文字調整 */
-  .icon {
-    width: 25px;
-    margin-right: 10px;
-    text-align: center;
-  }
-
-  /* 区切り線 */
-  .divider {
-    height: 1px;
-    background-color: #444;
-    margin: 8px 0;
-  }
-
-  /* アニメーション定義 */
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+}
 
 @media screen and (max-width: 700px) {
-  
-.dropdown-menu {
+
+  .dropdown-menu {
     /* ★ここを変更：右上に寄せる設定 */
-    width: 250px;      /* 横幅：画面いっぱいにはせず、程よい大きさに */
-    right: 10px;       /* 右端から10pxだけ離す */
-    left: auto;        /* 左側の指定は解除（念のため） */
-    
+    width: 250px;
+    /* 横幅：画面いっぱいにはせず、程よい大きさに */
+    right: 10px;
+    /* 右端から10pxだけ離す */
+    left: auto;
+    /* 左側の指定は解除（念のため） */
+
     /* 高さ調整（ヘッダーに被るなら数字を大きくしてください） */
-    top: 70px;         
-    
+    top: 70px;
+
     box-sizing: border-box;
   }
 
   /* リンク（ボタン）の押しやすさ調整 */
   .dropdown-menu a {
-    padding: 15px 20px; /* 指でタップしやすいように縦幅は広めのまま */
-    font-size: 16px;    /* 文字サイズ */
+    padding: 15px 20px;
+    /* 指でタップしやすいように縦幅は広めのまま */
+    font-size: 16px;
+    /* 文字サイズ */
   }
 }
-
