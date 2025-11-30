@@ -28,7 +28,7 @@ module.exports = async (req, res) => {
     const genAI = new GoogleGenerativeAI(API_KEY);
     
     // ★ここを変更：モデル名を少し変えてみる
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const result = await model.generateContent([
       prompt,
