@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>みんなの過去問ドットコム</title>
+  
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="/img/favicon-16.ico" sizes="16x16" type="image/iso">
+  <link rel="icon" href="/img/favicon-32.ico" sizes="32x32" type="image/iso">
+  <link rel="icon" href="/img/favicon-48.ico" sizes="48x48" type="image/iso">
+  <link rel="icon" href="/img/favicon-128.ico" sizes="128x128" type="image/iso">
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon-180.ico">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
+  
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* === モーダル（ポップアップ画面）用のCSS === */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(5px);
+      z-index: 9999;
+      align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.3s ease;
+    }
+    .modal-overlay.active { display: flex; opacity: 1; }
+
+    .modal-box {
+      background: white; width: 90%; max-width: 600px; max-height: 85vh; /* 高さを少し確保 */
+      overflow-y: auto; border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.2); padding: 40px;
+      position: relative; transform: translateY(20px); transition: transform 0.3s ease;
+      text-align: left;
+    }
+    .modal-overlay.active .modal-box { transform: translateY(0); }
+
+    .close-btn {
+      position: absolute; top: 15px; right: 15px; background: #eee;
+      border: none; width: 35px; height: 35px; border-radius: 50%;
+      font-size: 1.2rem; cursor: pointer; color: #666;
+      display: flex; align-items: center; justify-content: center; transition: 0.2s;
+      z-index: 10;
+    }
+    .close-btn:hover { background: #ff6b6b; color: white; }
+
+    /* === 製作者モーダル用 === */
+    .profile-section { text-align: center; }
+    .modal-profile-img {
+      width: 120px; height: 120px; border-radius: 50%; object-fit: cover;
+      border: 4px solid #f0f0f0; margin-bottom: 15px;
+    }
+    .modal-role {
+      background: #e0fffa; color: #20b2aa; padding: 4px 12px; border-radius: 15px; 
+      font-size: 0.8rem; font-weight: bold;
+    }
+    .modal-msg {
+      margin-top: 20px; background: #f9f9f9; padding: 20px; border-radius: 10px;
+      font-size: 0.95rem; line-height: 1.8; text-align: left; color: #444;
+    }
+    .modal-msg strong {
+      color: #20b2aa;
+      background: linear-gradient(transparent 70%, #7fffd4 70%);
+    }
+    .modal-msg p { margin-bottom: 15px; }
+    .modal-msg p:last-child { margin-bottom: 0; }
+
+    /* === 使い方モーダル用 === */
+    .step-item { display: flex; gap: 15px; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
+    .step-item:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    
+    .step-num {
+      background: #20b2aa; color: white; width: 30px; height: 30px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0;
+    }
+    .step-title { font-weight: bold; color: #20b2aa; margin-bottom: 5px; font-size: 1.05rem; }
+    .step-desc { font-size: 0.9rem; color: #666; margin: 0; line-height: 1.5; }
+  </style>
+</head>
+<body>
+
+  <div class="background-shapes">
+    <div class="shape"></div><div class="shape"></div><div class="shape"></div><div class="shape"></div><div class="shape"></div>
+  </div>
+
+  <div class="hero-container">
+    <div class="glass-card">
+      <h1>みんなの過去問<br>ドットコム</h1>
+      <p class="subtitle">
+        大学、中学対応！<br>
+        これで単位、内申点を楽々GET<br>
+        テスト勉強の味方。<br>
+        先輩たちの過去問を検索・共有しよう。
+      </p>
+
+      <div class="btn-group">
+        <a href="loginform.html" class="btn btn-primary">👤 ログイン / 登録</a>
+        <button onclick="openModal('creator-modal')" class="btn btn-secondary">📝 製作者を見る</button>
+        <button onclick="openModal('howto-modal')" class="btn btn-secondary">🔍 どんなサイト？</button>
+        <button onclick="openModal('privacy-modal')" class="btn btn-secondary">🛡️ プライバシーポリシー</button>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdjlU9jo2ovh0DSLD9GakZXv_AP9CB2rw-Gp5zZx9huocNRGg/viewform" target="_blank" class="btn btn-secondary">✉️ 質問・不具合報告</a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 みんなの過去問ドットコム
+  </footer>
+
+  <div id="creator-modal" class="modal-overlay" onclick="closeModal(event, 'creator-modal')">
+    <div class="modal-box">
+      <button class="close-btn" onclick="forceClose('creator-modal')">×</button>
+      
+      <div class="profile-section">
+        <img src="img/creater.jpg" alt="H.S" class="modal-profile-img">
+        <h2 style="margin:5px 0;">H.S</h2>
+        <span class="modal-role">Developer / Creator</span>
+      </div>
+
+      <div class="modal-msg">
+        <p>
+          <strong>「過去問探しで、もう時間を無駄にしてほしくない。」</strong>
+        </p>
+        <p>
+          学生時代、テスト勉強をするたびに「先輩が持っているあの過去問があれば…」と悔しい思いをしてきました。
+          貴重な学習データが、一部の人だけで共有されて消えていくのはあまりにももったいない。
+        </p>
+        <p>
+          そんな想いから生まれたのが、この「みんなの過去問ドットコム」です。
+          ただ過去問を集めるだけでなく、最新の<strong>AI技術</strong>を活用して、
+          解説や類題まで自動で生成できるようにしました。
+        </p>
+        <p>
+          みんなで知識をシェアして、効率よく、最短で点数を取れる場所を作りたい。
+          このサイトが、あなたの目標達成の強力な味方になることを願っています。
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div id="howto-modal" class="modal-overlay" onclick="closeModal(event, 'howto-modal')">
+    <div class="modal-box">
+      <button class="close-btn" onclick="forceClose('howto-modal')">×</button>
+      
+      <h2 style="text-align:center; color:#20b2aa; margin-bottom:10px;">サイトの使い方</h2>
+      <p style="text-align:center; color:#666; font-size:0.9rem; margin-bottom:30px;">
+        ただの過去問置き場ではありません。<br>AIの力で、もっと効率的に学習できます。
+      </p>
+
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div>
+          <div class="step-title">過去問を投稿</div>
+          <p class="step-desc">手持ちの過去問（画像やPDF）を投稿フォームからアップロードします。学校名や年度も入力してください。</p>
+        </div>
+      </div>
+
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div>
+          <div class="step-title">AIが徹底解析</div>
+          <p class="step-desc">投稿された問題をAIが読み込み、「わかりやすい解説」と、練習用の「類題（似た問題）」を自動で作ります。</p>
+        </div>
+      </div>
+
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div>
+          <div class="step-title">解答も自動生成</div>
+          <p class="step-desc">類題の「模範解答」もAIが出力。解説を見ながら、類題を解くことで確実に力がつきます。</p>
+        </div>
+      </div>
+
+      <div class="step-item">
+        <div class="step-num">4</div>
+        <div>
+          <div class="step-title">みんなでシェア</div>
+          <p class="step-desc">解析されたデータは掲示板に公開されます。みんなが投稿した解説付きの過去問で勉強しましょう！</p>
+        </div>
+      </div>
+
+      <div style="text-align:center; margin-top:30px;">
+        <a href="loginform.html" class="btn btn-primary">登録してはじめる！</a>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="privacy-modal" class="modal-overlay" onclick="closeModal(event, 'privacy-modal')">
+    <div class="modal-box">
+      <button class="close-btn" onclick="forceClose('privacy-modal')">×</button>
+      
+      <h2 style="text-align:center; color:#20b2aa; margin-bottom:20px;">プライバシーポリシー</h2>
+      
+      <div class="modal-msg" style="font-size:0.85rem;">
+        <h3 style="color:#333; margin-top:0;">運営者情報</h3>
+        <p>
+          <strong>サイト名：</strong>みんなの過去問ドットコム<br>
+          <strong>運営者：</strong>みんなの過去問ドットコム運営<br>
+          <strong>目的：</strong>過去の入試問題や定期テストの情報を共有し、学習者の対策を支援すること。
+        </p>
+
+        <h3 style="color:#333; margin-top:20px;">広告の配信について</h3>
+        <p>
+          当サイトは、第三者配信の広告サービス「Google AdSense」を利用する予定です。
+          広告配信事業者は、ユーザーの興味に応じた広告を表示するためにCookie（クッキー）を使用することがあります。これにより、当サイトや他サイトへのアクセスに関する情報を使用しますが、氏名、住所、メール アドレス、電話番号は含まれません。
+          Cookieを無効にする設定およびGoogleアドセンスに関する詳細は<a href="https://policies.google.com/technologies/ads?hl=ja" target="_blank" style="color:#20b2aa;">「Googleのポリシーと規約」</a>をご覧ください。
+        </p>
+
+        <h3 style="color:#333; margin-top:20px;">アクセス解析ツールについて</h3>
+        <p>
+          当サイトでは、Googleによるアクセス解析ツール「Googleアナリティクス」を利用しています。
+          このGoogleアナリティクスはトラフィックデータの収集のためにCookieを使用しています。このトラフィックデータは匿名で収集されており、個人を特定するものではありません。この機能はCookieを無効にすることで収集を拒否することが出来ますので、お使いのブラウザの設定をご確認ください。
+        </p>
+
+        <h3 style="color:#333; margin-top:20px;">免責事項</h3>
+        <p>
+          当サイトに掲載している過去問や解答・解説の内容については、可能な限り正確な情報を掲載するよう努めておりますが、その正確性や安全性を保証するものではありません。
+          当サイトの情報を用いて行う一切の行為、被った損害・損失に対しては、一切の責任を負いかねますのでご了承ください。
+          また、掲載されている情報は予告なしに変更・削除されることがあります。
+        </p>
+
+        <h3 style="color:#333; margin-top:20px;">著作権について</h3>
+        <p>
+          当サイトで掲載している文章や画像などにつきましては、無断転載することを禁止します。
+          当サイトは著作権の侵害を目的とするものではありません。使用している版権物の知的所有権はそれぞれの著作者・団体に帰属しております。著作権や肖像権に関して問題がありましたら、お問い合わせフォームよりご連絡ください。迅速に対応いたします。
+        </p>
+      </div>
+    </div>
+  </div>
+  <script>
+    // モーダル制御用スクリプト
+    function openModal(id) {
+      const modal = document.getElementById(id);
+      modal.style.display = 'flex';
+      setTimeout(() => { modal.classList.add('active'); }, 10);
+    }
+    function closeModal(e, id) {
+      if (e.target.id === id) forceClose(id);
+    }
+    function forceClose(id) {
+      const modal = document.getElementById(id);
+      modal.classList.remove('active');
+      setTimeout(() => { modal.style.display = 'none'; }, 300);
+    }
+  </script>
+
+</body>
+</html>

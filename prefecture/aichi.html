@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -25,6 +26,8 @@
       margin-left: auto;
       margin-right: auto;
       margin-bottom: 150px;
+      margin-top: 120px;
+      text-align: center;
     }
 
     /* 検索ボックス */
@@ -83,6 +86,37 @@
       display: block;
     }
 
+    /* 絞り込みボタンのデザイン */
+    .filter-buttons {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 15px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 6px 16px;
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: #666;
+      transition: 0.2s;
+    }
+
+    .filter-btn:hover {
+      background-color: #f5f5f5;
+    }
+
+    .filter-btn.active {
+      background-color: #20b2aa;
+      color: white;
+      border-color: #20b2aa;
+    }
+
     /* リストのデザイン */
     .school-list {
       list-style: none;
@@ -134,16 +168,44 @@
 <body>
   <header class="site-header">
     <a href="../index.html">
-      <img src="../img/header.png" alt="ヘッダー画像">
+      <img src="../img/header.png" alt="みんなの過去問ドットコム">
     </a>
-    
-    <div class="header-buttons">
-      <a href="loginform.html" class="header-btn">ログイン</a>
-      <a href="../howtouse.html" class="header-btn">使い方</a>
-      <a href="../introduction.html" class="header-btn">製作者</a>
-      <button id="btn-logout" class="header-btn" style="background:#ff6b6b; cursor:pointer;">ログアウト</button>
+
+    <div class="menu-container">
+      <button class="menu-btn" id="menu-btn-toggle">☰</button>
+      
+      <div id="myDropdown" class="dropdown-menu">
+        <div class="user-info-box">
+          <span class="icon">👤</span>
+          <span id="user-email-display" class="user-email-text">ゲスト</span>
+        </div>
+
+        <ul>
+          <li>
+            <a href="../index.html">
+              <span class="icon">🏠</span> トップページ
+            </a>
+          </li>
+          <li>
+            <a href="../howtouse.html">
+              <span class="icon">❓</span> 使い方
+            </a>
+          </li>
+          <li>
+            <a href="../introduction.html">
+              <span class="icon">📝</span> 製作者について
+            </a>
+          </li>
+          <li class="divider"></li>
+          <li>
+            <a href="#" id="menu-logout">
+              <span class="icon">👋</span> ログアウト
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
-  </header>    
+  </header>
 
   <main style="margin-top: 120px; text-align: center;">
     <h1>愛知県の過去問</h1>
@@ -645,18 +707,13 @@
       </ul>
     </div>
 
-    <main style="margin-top: 120px; text-align: center;">
-        <div id="middle" class="tab-content">
-        </div>
-      
-        <a href="../index.html" class="back-btn">戻る</a>
-    </main>
+<a href="../index.html" class="back-btn">戻る</a>
   </main>
 
   <script type="module" src="../auth.js"></script>
 
   <script>
-    //タブ切り替え機能
+    // タブ切り替え機能
     function switchTab(tabId, btnElement) {
       // すべてのコンテンツを隠す
       document.querySelectorAll('.tab-content').forEach(el => {
@@ -679,8 +736,8 @@
       document.querySelectorAll('.school-list li').forEach(li => li.style.display = '');
     }
 
-      // 検索機能
-      document.getElementById('school-search').addEventListener('keyup', function() {
+    // 検索機能
+    document.getElementById('school-search').addEventListener('keyup', function() {
       const searchText = this.value.toLowerCase(); // 入力された文字
       
       // タブの中のリストを取得
@@ -697,7 +754,7 @@
       });
     });
 
-// 3. 絞り込み機能（修正版）
+    // 絞り込み機能
     function filterUniv(category, btnElement) {
       // 今開いているタブ（activeがついているタブ）を取得
       const activeTab = document.querySelector('.tab-content.active');
@@ -714,12 +771,10 @@
         if (category === 'all') {
            isMatch = true;
         } else if (category === 'natpub') {
-           // 「国公立」ボタンの場合は nat か pub を表示
            if (itemCat === 'nat' || itemCat === 'pub') {
              isMatch = true;
            }
         } else {
-           // それ以外（私立など）は完全一致
            if (itemCat === category) {
              isMatch = true;
            }

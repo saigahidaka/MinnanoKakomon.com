@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>製作者について - みんなの過去問ドットコム</title>
+  <link rel="icon" href="/img/favicon-16.ico" sizes="16x16" type="image/iso">
+  <link rel="icon" href="/img/favicon-32.ico" sizes="32x32" type="image/iso">
+  <link rel="icon" href="/img/favicon-48.ico" sizes="48x48" type="image/iso">
+  <link rel="icon" href="/img/favicon-128.ico" sizes="128x128" type="image/iso">
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon-180.ico">
+  <link rel="stylesheet" href="style.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* === このページ専用の設定 === */
+
+    /* 背景をいつもの「緑色」に固定 */
+    body {
+      background: #7fffd4 !important;
+      min-height: 100vh;
+    }
+
+    /* アニメーション背景があれば消す */
+    .background-shapes {
+      display: none !important;
+    }
+
+    /* プロフィール画像のスタイル */
+    .profile-img {
+      width: 150px;
+      height: 150px;
+      object-fit: cover; /* 画像を綺麗に切り抜く */
+      border-radius: 50%; /* 丸くする */
+      border: 4px solid #fff;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      background-color: #fff;
+    }
+
+    /* 名前 */
+    .creator-name {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #222;
+      margin-bottom: 5px;
+    }
+
+    .creator-role {
+      font-size: 0.9rem;
+      color: #20b2aa;
+      font-weight: bold;
+      margin-bottom: 30px;
+      display: inline-block;
+      background: #e0fffa;
+      padding: 5px 15px;
+      border-radius: 20px;
+    }
+
+    /* 熱意のメッセージ */
+    .message-box {
+      text-align: left;
+      background: rgba(255, 255, 255, 0.6);
+      padding: 30px;
+      border-radius: 20px;
+      margin-bottom: 30px;
+      line-height: 1.8;
+      color: #444;
+    }
+
+    .message-box p {
+      margin-bottom: 15px;
+    }
+
+    .message-box strong {
+      color: #20b2aa;
+      background: linear-gradient(transparent 70%, #7fffd4 70%); /* 蛍光ペン風の下線 */
+    }
+
+  </style>
+</head>
+<header class="site-header">
+    <a href="index.html">
+      <img src="img/header.png" alt="みんなの過去問ドットコム">
+    </a>
+
+    <div class="menu-container">
+      <button class="menu-btn" id="menu-btn-toggle">☰</button>
+      
+      <div id="myDropdown" class="dropdown-menu">
+        <div class="user-info-box">
+          <span class="icon">👤</span>
+          <span id="user-email-display" class="user-email-text">ゲスト</span>
+        </div>
+
+        <ul>
+          <li>
+            <a href="index.html">
+              <span class="icon">🏠</span> トップページ
+            </a>
+          </li>
+          <li>
+            <a href="howtouse.html">
+              <span class="icon">❓</span> 使い方
+            </a>
+          </li>
+          <li>
+            <a href="introduction.html">
+              <span class="icon">📝</span> 製作者について
+            </a>
+          </li>
+          <li class="divider"></li>
+          <li>
+            <a href="main.html" id="menu-logout">
+              <span class="icon">👋</span> ログアウト
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </header>
+<script type="module" src="auth.js"></script>
+<body>
+
+  <div class="hero-container">
+    <div class="glass-card" style="max-width: 600px;">
+      
+      <img src="img/creator.jpg" alt="H.S" class="profile-img">
+
+      <div class="creator-name">H.S</div>
+      <div class="creator-role">Developer / Creator</div>
+
+      <div class="message-box">
+        <p>
+          <strong>「過去問探しで、もう時間を無駄にしてほしくない。」</strong>
+        </p>
+        <p>
+          学生時代、テスト勉強をするたびに「先輩が持っているあの過去問があれば…」と悔しい思いをしてきました。
+          貴重な学習データが、一部の人だけで共有されて消えていくのはあまりにももったいない。
+        </p>
+        <p>
+          そんな想いから生まれたのが、この「みんなの過去問ドットコム」です。
+          ただ過去問を集めるだけでなく、最新の<strong>AI技術</strong>を活用して、
+          解説や類題まで自動で生成できるようにしました。
+        </p>
+        <p>
+          みんなで知識をシェアして、効率よく、最短で点数を取れる場所を作りたい。
+          このサイトが、あなたの目標達成の強力な味方になることを願っています。
+        </p>
+      </div>
+
+      <div class="btn-group">
+        <a href="index.html" class="btn btn-primary">トップへ戻る</a>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 みんなの過去問ドットコム
+  </footer>
+
+</body>
+</html>

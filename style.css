@@ -1,288 +1,280 @@
-/* style.css */
 
-/* ★ズレ防止：すべての要素のサイズ計算を統一 */
-*,
-*::before,
-*::after {
+@charset "UTF-8";
+
+/* =========================================
+   1. 基本設定 (Base)
+   ========================================= */
+
+/* すべての要素のサイズ計算を統一（ズレ防止） */
+*, *::before, *::after {
   box-sizing: border-box;
 }
 
-/* === 全体の設定 === */
 body {
-  font-family: 'Noto Sans JP', sans-serif;
-  background-color: #7fffd4;
   margin: 0;
-  color: #333;
+  padding: 0;
+  font-family: 'M PLUS Rounded 1c', 'Noto Sans JP', sans-serif;
+  color: #444;
+  
+  /* ★ここを修正：グラデーションをやめて、単色の緑に戻す */
+  background: #7fffd4;
+  background-image: none; /* 念のためグラデーションを無効化 */
+  
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  font-size: clamp(14px, 2vw, 16px);
   overflow-x: hidden;
-  padding-top: 80px;
-  zoom: 0.9;
 }
 
+/* 画像の基本設定 */
 img {
   max-width: 100%;
   height: auto;
 }
 
-/* =========================================
-   ヘッダー設定（高さ完全固定・はみ出し許可版）
-   ========================================= */
-.site-header {
-  background: #fff;
-  /* ★高さを80pxに絶対固定！これ以上大きくなりません */
-  height: 80px;
+/* リンクの基本設定 */
+a {
+  text-decoration: none;
+  color: inherit;
+}
 
+
+/* =========================================
+   2. 背景アニメーション (Background Shapes)
+   ========================================= */
+.background-shapes {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.shape {
+  position: absolute;
+  bottom: -100px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  animation: floatUp 15s infinite linear;
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.8; }
+  100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; }
+}
+
+/* 円の個別設定 */
+.shape:nth-child(1) { width: 80px; height: 80px; left: 10%; animation-duration: 12s; animation-delay: 0s; background: rgba(32, 178, 170, 0.1); }
+.shape:nth-child(2) { width: 120px; height: 120px; left: 25%; animation-duration: 18s; animation-delay: 2s; background: rgba(127, 255, 212, 0.2); }
+.shape:nth-child(3) { width: 50px; height: 50px; left: 50%; animation-duration: 10s; animation-delay: 5s; background: rgba(255, 255, 255, 0.5); }
+.shape:nth-child(4) { width: 90px; height: 90px; left: 75%; animation-duration: 14s; animation-delay: 1s; background: rgba(32, 178, 170, 0.15); }
+.shape:nth-child(5) { width: 60px; height: 60px; left: 90%; animation-duration: 16s; animation-delay: 3s; background: rgba(127, 255, 212, 0.3); }
+
+
+/* =========================================
+   3. トップページ用レイアウト (Hero Section)
+   ========================================= */
+.hero-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* ガラスモーフィズムのボード */
+.glass-card {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 30px;
+  padding: 60px 40px;
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+  animation: fadeIn 1.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin: 0 0 15px 0;
+  color: #20b2aa; /* テーマカラー */
+  letter-spacing: 0.05em;
+}
+
+.subtitle {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 40px;
+  line-height: 1.6;
+}
+
+
+/* =========================================
+   4. ボタンデザイン (Buttons)
+   ========================================= */
+.btn-group {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+.btn {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  padding: 16px;
+  text-decoration: none;
+  border-radius: 50px;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-align: center;
+}
+
+/* メインボタン（グラデーション） */
+.btn-primary {
+  background: linear-gradient(45deg, #20b2aa, #40e0d0);
+  color: white;
+  box-shadow: 0 5px 15px rgba(32, 178, 170, 0.3);
+  border: none;
+}
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(32, 178, 170, 0.4);
+}
+
+/* サブボタン（白背景） */
+.btn-secondary {
+  background: white;
+  color: #20b2aa;
+  border: 2px solid #20b2aa;
+}
+.btn-secondary:hover {
+  background: #e0fffa;
+  transform: translateY(-3px);
+}
+
+
+/* =========================================
+   5. 旧ヘッダー & ナビゲーション (Legacy)
+   ※ 他のページで必要になる場合に備えて残しています
+   ========================================= */
+
+/* ヘッダーが必要なページには body に class="has-header" をつけてください */
+body.has-header {
+  padding-top: 80px;
+}
+
+.site-header {
+  background: #fff;
+  height: 80px;
+  position: fixed;
+  top: 0; left: 0; right: 0;
   z-index: 1000;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-
-  flex-wrap: nowrap;
-  overflow: visible;
-
   padding: 0 20px;
 }
 
 .site-header img {
-  height: auto;
-  max-height: 50px;
+  height: 50px;
   width: auto;
-  display: block;
-  object-fit: contain;
-
-  /* ロゴは絶対に縮ませない */
-  flex-shrink: 0;
-  margin-right: 20px;
 }
 
 .header-buttons {
   display: flex;
-  gap: 5px;
-  margin-right: 50px;
-
-  /* ボタンエリアも縮ませない（そのまま右へフェードアウトさせる感じ） */
-  flex-shrink: 0;
+  gap: 10px;
 }
 
-/* ボタン共通設定 */
 .header-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   background-color: #f5deb3;
   color: #fff;
-  width: 90px;
-  height: 44px;
-  font-size: 15px;
+  padding: 10px 15px;
+  font-size: 14px;
   font-weight: bold;
   border-radius: 6px;
-  text-decoration: none;
-  transition: all 0.3s ease;
-  white-space: nowrap;
-  border: none;
+  transition: 0.3s;
 }
-
 .header-btn:hover {
   background-color: #deb887;
   transform: translateY(-2px);
 }
 
-
-
-/* =========================================
-   AI解説の折りたたみ（アコーディオン）
-   ※HTML側の<style>を消しても動くようにここに追加
-   ========================================= */
-.ai-comment {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 5;
-  /* 5行制限 */
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.ai-comment.open {
-  -webkit-line-clamp: unset;
-  /* 全表示 */
-}
-
-.toggle-btn {
-  display: block;
-  margin: 5px auto 15px auto;
-  /* 中央寄せ */
-  background: none;
-  border: none;
-  color: #20b2aa;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 0.9rem;
-  padding: 5px 10px;
-}
-
-.toggle-btn:hover {
-  text-decoration: underline;
-  background-color: rgba(32, 178, 170, 0.1);
-  border-radius: 4px;
-}
-
-/* =========================================
-   絞り込みボタンのデザイン
-   ========================================= */
-.filter-buttons {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 15px;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 10px;
-  flex-wrap: wrap;
-  /* スマホでボタンが多くても折り返す */
-}
-
-.filter-btn {
-  padding: 6px 16px;
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  color: #666;
-  transition: 0.2s;
-}
-
-.filter-btn:hover {
-  background-color: #f5f5f5;
-}
-
-/* 選択中の絞り込みボタン */
-.filter-btn.active {
-  background-color: #20b2aa;
-  color: white;
-  border-color: #20b2aa;
-}
-
-.menu-container {
-  position: relative;
-  display: inline-block;
-}
-
-/* ハンバーガーボタンのデザイン */
-.menu-btn {
-  background: transparent;
-  border: 2px solid #ccc;
-  /* 枠線 */
-  color: #333;
-  font-size: 24px;
-  cursor: pointer;
-  padding: 5px 10px;
-  border-radius: 5px;
-}
-
-/* ドロップダウンメニュー本体 */
+/* ハンバーガーメニュー類 */
+.menu-container { position: relative; display: inline-block; }
+.menu-btn { background: transparent; border: 2px solid #ccc; color: #333; font-size: 24px; cursor: pointer; padding: 5px 10px; border-radius: 5px; }
 
 .dropdown-menu {
   display: none;
   position: absolute;
-  top: 90px;
-  right: 10px;
+  top: 60px; right: 0;
   width: 200px;
   background-color: #2b2b2b;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
   border-radius: 8px;
-  padding: 10px 0;
   z-index: 100;
 }
+.dropdown-menu.show { display: block; animation: fadeIn 0.2s ease-out; }
+.dropdown-menu ul { list-style: none; padding: 0; margin: 0; }
+.dropdown-menu a { display: block; padding: 12px 20px; color: #e0e0e0; border-bottom: 1px solid #444; }
+.dropdown-menu a:hover { background-color: #3d3d3d; }
 
-/* メニューを表示するためのクラス */
-.dropdown-menu.show {
-  display: block;
-  /* 表示する */
-  animation: fadeIn 0.2s ease-out;
-  /* ふわっと出るアニメーション */
+
+/* =========================================
+   6. その他・レスポンシブ
+   ========================================= */
+footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 0.8rem;
+  color: #888;
+  margin-top: auto;
 }
 
-/* メニューの中身（リスト） */
-.dropdown-menu ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+@media (max-width: 480px) {
+  h1 { font-size: 1.8rem; }
+  .glass-card { padding: 40px 20px; }
+  .site-header { padding: 0 10px; }
+  .header-btn { font-size: 12px; padding: 8px 10px; }
 }
 
-/* 各リンクのデザイン */
-.dropdown-menu a {
+/* === ハンバーガーメニュー内のユーザー情報 === */
+.user-info-box {
+  padding: 15px 20px;
+  background-color: #3d3d3d; /* 少し明るいグレー */
+  border-bottom: 1px solid #555;
+  color: #fff;
+  font-size: 0.85rem;
   display: flex;
   align-items: center;
-  padding: 12px 20px;
-  text-decoration: none;
-  color: #e0e0e0;
-  font-size: 16px;
-  transition: background 0.2s;
+  gap: 10px;
+  word-break: break-all; /* 長いメアドでも折り返す */
 }
 
-/* マウスを乗せた時 */
-.dropdown-menu a:hover {
-  background-color: #3d3d3d;
+.user-info-box .icon {
+  font-size: 1.2rem;
 }
 
-/* アイコン代わりの文字調整 */
-.icon {
-  width: 25px;
-  margin-right: 10px;
-  text-align: center;
-}
-
-/* 区切り線 */
-.divider {
-  height: 1px;
-  background-color: #444;
-  margin: 8px 0;
-}
-
-/* アニメーション定義 */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@media screen and (max-width: 700px) {
-
-  .dropdown-menu {
-    /* ★ここを変更：右上に寄せる設定 */
-    width: 250px;
-    /* 横幅：画面いっぱいにはせず、程よい大きさに */
-    right: 10px;
-    /* 右端から10pxだけ離す */
-    left: auto;
-    /* 左側の指定は解除（念のため） */
-
-    /* 高さ調整（ヘッダーに被るなら数字を大きくしてください） */
-    top: 70px;
-
-    box-sizing: border-box;
-  }
-
-  /* リンク（ボタン）の押しやすさ調整 */
-  .dropdown-menu a {
-    padding: 15px 20px;
-    /* 指でタップしやすいように縦幅は広めのまま */
-    font-size: 16px;
-    /* 文字サイズ */
-  }
+.user-email-text {
+  font-weight: bold;
+  color: #7fffd4; /* テーマカラーの緑 */
 }

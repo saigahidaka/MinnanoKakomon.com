@@ -14,31 +14,90 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 
-// === 門番の仕事 ===
+// === 1. ログイン状態の監視 ===
 onAuthStateChanged(auth, (user) => {
+  const currentUrl = window.location.href;
+
   if (user) {
-    // ログインOK！画面を表示する
-    document.body.style.display = "block";
+    // A. ログイン中
+    if (currentUrl.includes("loginform.html")) {
+       window.location.href = "index.html"; // ログイン済みならトップへ
+       return; 
+    }
     
-    // ★ここにあった「名前を表示するコード」を削除しました
+    // 画面を表示
+    document.body.style.display = "block";
+
+    // メニューにメールアドレスを表示
+    const emailDisplay = document.getElementById("user-email-display");
+    if (emailDisplay) {
+      emailDisplay.textContent = user.email;
+    }
 
   } else {
-    // ログインしてないなら強制送還
-    // (ただし今いるのがログイン画面なら飛ばない)
-    if (!window.location.href.includes("loginform.html")) {
-        window.location.href = "loginform.html";
+    // B. ログアウト中
+    
+    // 「ログインしてなくても見れるページ」リスト
+    const publicPages = [
+        "loginform.html",     
+        "introduction.html",  
+        "howtouse.html"
+    ];
+
+    // 今いるページがリストに入っているかチェック
+    const isPublicPage = publicPages.some(page => currentUrl.includes(page));
+
+    if (isPublicPage) {
+        // 公開ページなら表示OK
+        document.body.style.display = "block";
+    } else {
+        // ★それ以外の秘密ページ（board.html, index.html, 都道府県ページなど）は強制送還！
+        
+        // 階層によって飛ばす先を変える（../が必要かどうか）
+        // URLに "/prefecture/" や "/detail/" が含まれていたら深い階層にいる
+        if (currentUrl.includes("/prefecture/") || currentUrl.includes("/detail/")) {
+            window.location.href = "../loginform.html";
+        } else {
+            window.location.href = "loginform.html";
+        }
     }
   }
 });
 
-// === ログアウト機能 ===
+// === 2. メニューとログアウトの機能（全ページ共通） ===
 window.addEventListener('DOMContentLoaded', () => {
-    const btnLogout = document.getElementById("btn-logout");
+    
+    const menuBtn = document.getElementById("menu-btn-toggle");
+    const dropdown = document.getElementById("myDropdown");
+
+    if(menuBtn && dropdown) {
+        menuBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            dropdown.classList.toggle("show");
+        });
+
+        window.addEventListener("click", (e) => {
+            if (!e.target.matches('.menu-btn') && !e.target.closest('.dropdown-menu')) {
+                if (dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                }
+            }
+        });
+    }
+
+    const btnLogout = document.getElementById("menu-logout");
     if(btnLogout){
-      btnLogout.addEventListener("click", async () => {
-        await signOut(auth);
-        alert("ログアウトしました");
-        window.location.href = "loginform.html";
+      btnLogout.addEventListener("click", async (e) => {
+        e.preventDefault();
+        if(confirm("ログアウトしますか？")) {
+            await signOut(auth);
+            // ログアウト後の移動先も階層を考慮
+            if (window.location.href.includes("/prefecture/") || window.location.href.includes("/detail/")) {
+                window.location.href = "../loginform.html";
+            } else {
+                window.location.href = "loginform.html";
+            }
+        }
       });
     }
 });

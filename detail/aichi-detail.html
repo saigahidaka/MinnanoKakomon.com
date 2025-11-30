@@ -57,11 +57,39 @@
 <body>
   <header class="site-header">
     <a href="../index.html"><img src="../img/header.png" alt="ヘッダー画像"></a>
-    <div class="header-buttons">
-      <a href="../loginform.html" class="header-btn">ログイン</a>
-      <a href="../howtouse.html" class="header-btn">使い方</a>
-      <a href="../introduction.html" class="header-btn">製作者</a>
-      <button id="btn-logout" class="header-btn" style="background:#ff6b6b; cursor:pointer;">ログアウト</button>
+    <div class="menu-container">
+      <button class="menu-btn" id="menu-btn-toggle">☰</button>
+      
+      <div id="myDropdown" class="dropdown-menu">
+        <div class="user-info-box">
+          <span class="icon">👤</span>
+          <span id="user-email-display" class="user-email-text">ゲスト</span>
+        </div>
+
+        <ul>
+          <li>
+            <a href="../index.html">
+              <span class="icon">🏠</span> トップページ
+            </a>
+          </li>
+          <li>
+            <a href="../howtouse.html">
+              <span class="icon">❓</span> 使い方
+            </a>
+          </li>
+          <li>
+            <a href="../introduction.html">
+              <span class="icon">📝</span> 製作者について
+            </a>
+          </li>
+          <li class="divider"></li>
+          <li>
+            <a href="#" id="menu-logout">
+              <span class="icon">👋</span> ログアウト
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
   </header>
 

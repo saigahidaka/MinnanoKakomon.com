@@ -45,12 +45,46 @@
   </style>
 </head>
     
-<body>
-  <header class="site-header">
-    <img src="img/header.png" alt="ヘッダー画像">
-      <div class="menu-container">
-    <button class="menu-btn" onclick="toggleMenu()">☰</button>
-  </header>    
+<header class="site-header">
+    <a href="index.html">
+      <img src="img/header.png" alt="みんなの過去問ドットコム">
+    </a>
+
+    <div class="menu-container">
+      <button class="menu-btn" id="menu-btn-toggle">☰</button>
+      
+      <div id="myDropdown" class="dropdown-menu">
+        <div class="user-info-box">
+          <span class="icon">👤</span>
+          <span id="user-email-display" class="user-email-text">ゲスト</span>
+        </div>
+
+        <ul>
+          <li>
+            <a href="index.html">
+              <span class="icon">🏠</span> トップページ
+            </a>
+          </li>
+          <li>
+            <a href="howtouse.html">
+              <span class="icon">❓</span> 使い方
+            </a>
+          </li>
+          <li>
+            <a href="introduction.html">
+              <span class="icon">📝</span> 製作者について
+            </a>
+          </li>
+          <li class="divider"></li>
+          <li>
+            <a href="main.html" id="menu-logout">
+              <span class="icon">👋</span> ログアウト
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </header>
 
   <main>
     <h1>都道府県を選択してください</h1>
@@ -112,18 +146,18 @@
     <div id="myDropdown" class="dropdown-menu">
       <ul>
         <li>
-          <a href="/login.html">
+          <a href="loginform.html">
             <span class="icon">🔑</span> ログイン
           </a>
         </li>
         
         <li class="divider"></li> <li>
-          <a href="/about.html">
+          <a href="introduction.html">
             <span class="icon">👤</span> 製作者について
           </a>
         </li>
         <li>
-          <a href="/help.html">
+          <a href="howtouse.html">
             <span class="icon">❓</span> 使い方
           </a>
         </li>

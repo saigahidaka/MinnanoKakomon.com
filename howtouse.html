@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>使い方 - みんなの過去問ドットコム</title>
+  
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="/img/favicon-16.ico" sizes="16x16" type="image/iso">
+  <link rel="icon" href="/img/favicon-32.ico" sizes="32x32" type="image/iso">
+  <link rel="icon" href="/img/favicon-48.ico" sizes="48x48" type="image/iso">
+  <link rel="icon" href="/img/favicon-128.ico" sizes="128x128" type="image/iso">
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon-180.ico">
+  
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* このページ専用のデザイン上書き */
+    body {
+      background: #7fffd4 !important; 
+      min-height: 100vh;
+    }
+    .background-shapes {
+      display: none !important;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95) !important;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+      max-width: 700px !important;
+      margin-top: 20px; /* ヘッダーとかぶらないように少し下げる */
+    }
+    .step-list { text-align: left; margin: 30px 0; }
+    .step-item {
+      display: flex; align-items: flex-start; margin-bottom: 20px; padding: 20px;
+      background: #f0fff0; border: 2px solid #e0e0e0; border-radius: 15px;
+    }
+    .step-icon {
+      background: #20b2aa; color: white; min-width: 40px; height: 40px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      margin-right: 15px; font-weight: bold; font-size: 1.2rem; flex-shrink: 0;
+    }
+    .step-content h3 { margin: 0 0 5px 0; color: #20b2aa; font-size: 1.1rem; }
+    .step-content p { margin: 0; font-size: 0.95rem; color: #555; line-height: 1.6; }
+  </style>
+</head>
+
+<body>
+
+  <header class="site-header">
+    <a href="index.html">
+      <img src="img/header.png" alt="みんなの過去問ドットコム">
+    </a>
+
+    <div class="menu-container">
+      <button class="menu-btn" id="menu-btn-toggle">☰</button>
+      
+      <div id="myDropdown" class="dropdown-menu">
+        <div class="user-info-box">
+          <span class="icon">👤</span>
+          <span id="user-email-display" class="user-email-text">ゲスト</span>
+        </div>
+
+        <ul>
+          <li>
+            <a href="index.html">
+              <span class="icon">🏠</span> トップページ
+            </a>
+          </li>
+          <li>
+            <a href="howtouse.html">
+              <span class="icon">❓</span> 使い方
+            </a>
+          </li>
+          <li>
+            <a href="introduction.html">
+              <span class="icon">📝</span> 製作者について
+            </a>
+          </li>
+          <li class="divider"></li>
+          <li>
+            <a href="#" id="menu-logout">
+              <span class="icon">👋</span> ログアウト
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <div class="hero-container">
+    <div class="glass-card">
+      
+      <h1>サイトの使い方</h1>
+      <p class="subtitle">
+        過去問をAIで加工して共有しよう。<br>
+        使い方はとてもシンプルです。
+      </p>
+
+      <div class="step-list">
+        <div class="step-item">
+          <div class="step-icon">1</div>
+          <div class="step-content">
+            <h3>過去問を投稿</h3>
+            <p>手持ちの過去問（画像やPDF）を投稿フォームからアップロードします。</p>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-icon">2</div>
+          <div class="step-content">
+            <h3>AIが解析・解説作成</h3>
+            <p>AIが画像を読み込み、「わかりやすい解説」と「類題」を自動で作ります。</p>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-icon">3</div>
+          <div class="step-content">
+            <h3>掲示板でシェア</h3>
+            <p>解析結果は掲示板に投稿でき、みんなで共有・閲覧できるようになります。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <a href="index.html" class="btn btn-primary">トップへ戻る</a>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 みんなの過去問ドットコム
+  </footer>
+
+  <script>
+    lucide.createIcons();
+  </script>
+
+  <script type="module" src="auth.js"></script>
+
+</body>
+</html
