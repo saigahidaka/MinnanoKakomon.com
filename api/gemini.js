@@ -1,47 +1,37 @@
-// api/gemini.js
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const API_KEY = process.env.GEMINI_API_KEY;
-
-module.exports = async (req, res) => {
-  // CORS設定（そのまま）
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  );
-
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
+export default async function handler(req, res) {
+  // POSTメソッド以外は拒否
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  if (!API_KEY) {
-    return res.status(500).json({ error: 'APIキーが設定されていません' });
+  const { prompt, imageBase64 } = req.body;
+
+  if (!process.env.GEMINI_API_KEY) {
+    return res.status(500).json({ error: 'API Key is missing' });
   }
 
   try {
-    const { prompt, imageBase64 } = req.body;
-    
-    const genAI = new GoogleGenerativeAI(API_KEY);
-    
-    // ★ここを変更：モデル名を少し変えてみる
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // または gemini-pro-vision
 
-    const result = await model.generateContent([
-      prompt,
-      { inlineData: { data: imageBase64, mimeType: "image/jpeg" } }
-    ]);
+    // 画像データの準備
+    const imagePart = {
+      inlineData: {
+        data: imageBase64,
+        mimeType: "image/jpeg", // フロントから送る形式に合わせる
+      },
+    };
 
+    const result = await model.generateContent([prompt, imagePart]);
     const response = await result.response;
     const text = response.text();
 
-    res.status(200).json({ text: text });
+    return res.status(200).json({ text });
 
   } catch (error) {
-    console.error("Gemini Error:", error);
-    res.status(500).json({ error: error.message });
+    console.error("AI Error:", error);
+    return res.status(500).json({ error: error.message || 'AI processing failed' });
   }
-};
+}
