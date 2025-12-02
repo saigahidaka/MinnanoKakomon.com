@@ -6,7 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="img/favicon-16.ico" sizes="16x16" type="image/png">
+  <link rel="icon" href="/img/favicon-16.ico" sizes="16x16" type="image/iso">
+  <link rel="icon" href="/img/favicon-32.ico" sizes="32x32" type="image/iso">
+  <link rel="icon" href="/img/favicon-48.ico" sizes="48x48" type="image/iso">
+  <link rel="icon" href="/img/favicon-128.ico" sizes="128x128" type="image/iso">
+  <link rel="apple-touch-icon" sizes="180x180" href="/img/favicon-180.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
 
@@ -163,248 +167,310 @@
     <button id="send-btn" disabled>送信</button>
   </div>
 
-  <script type="module">
-    import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, query, where, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
-    import { GoogleGenerativeAI } from "@google/generative-ai";
+<script type="module">
+  import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
+  import { getFirestore, collection, addDoc, query, where, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+  import { GoogleGenerativeAI } from "@google/generative-ai";
 
-    // AIキー
-    const GEMINI_API_KEY = "AIzaSyD4R0lmu7rkg3DSMyPNneSPvSGn4NSIhsM"; 
+  // AIキー (※ここにあなたのAPIキーが入っていることを確認)
+  const GEMINI_API_KEY = "AIzaSyD4R0lmu7rkg3DSMyPNneSPvSGn4NSIhsM"; 
 
-    // Firebase Config
-    const firebaseConfig = {
-      apiKey: "AIzaSyD4ViHcFj-9334N1OGQR1v3dYN1RhWfzpg", 
-      authDomain: "minnanokakomon-c2b7f.firebaseapp.com",
-      projectId: "minnanokakomon-c2b7f",
-      storageBucket: "minnanokakomon-c2b7f.firebasestorage.app",
-      messagingSenderId: "387571811654",
-      appId: "1:387571811654:web:688b0c4203d07f4ae61147",
-      measurementId: "G-3XFHGSE7FN"
-    };
+  // Firebase Config
+  const firebaseConfig = {
+    apiKey: "AIzaSyD4ViHcFj-9334N1OGQR1v3dYN1RhWfzpg", 
+    authDomain: "minnanokakomon-c2b7f.firebaseapp.com",
+    projectId: "minnanokakomon-c2b7f",
+    storageBucket: "minnanokakomon-c2b7f.firebasestorage.app",
+    messagingSenderId: "387571811654",
+    appId: "1:387571811654:web:688b0c4203d07f4ae61147",
+    measurementId: "G-3XFHGSE7FN"
+  };
 
-    let app;
-    if (!getApps().length) { app = initializeApp(firebaseConfig); } else { app = getApps()[0]; }
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    
-    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+  let app;
+  if (!getApps().length) { app = initializeApp(firebaseConfig); } else { app = getApps()[0]; }
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  
+  // モデル設定（gemini-1.5-flashを使用推奨 ※2.0はまだ不安定な場合があるため）
+  const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    // 画面表示
-    document.body.style.display = "block";
+  // 画面表示
+  document.body.style.display = "block";
 
-    // 掲示板のボタンがクリックされた時
-    document.addEventListener('click', function(e) {
-      if(e.target && e.target.classList.contains('toggle-btn')) {
-        // ボタンのすぐ上にあるテキストエリアを探す
-        const textDiv = e.target.previousElementSibling;
-        if (textDiv && textDiv.classList.contains('ai-comment')) {
-          textDiv.classList.toggle('open');
-          if(textDiv.classList.contains('open')) {
-            e.target.textContent = '閉じる ▲';
-          } else {
-            e.target.textContent = 'もっと見る ▼';
-          }
+  // --- 共通機能（アコーディオンなど） ---
+  // 掲示板用のアコーディオン（もっと見る）
+  document.addEventListener('click', function(e) {
+    if(e.target && e.target.classList.contains('toggle-btn')) {
+      // 直前の要素が解説エリア(ai-comment)かどうか判定
+      const textDiv = e.target.previousElementSibling;
+      if (textDiv && textDiv.classList.contains('ai-comment')) {
+        textDiv.classList.toggle('open');
+        if(textDiv.classList.contains('open')) {
+          e.target.textContent = '閉じる ▲';
+        } else {
+          e.target.textContent = 'もっと見る ▼';
         }
+      }
+    }
+  });
+
+  window.addEventListener('DOMContentLoaded', () => {
+    // 戻るボタン
+    const backBtn = document.getElementById('btn-back');
+    if(backBtn) backBtn.addEventListener('click', () => history.back());
+    
+    // ログアウト
+    const btnLogout = document.getElementById('btn-logout');
+    if(btnLogout) btnLogout.addEventListener('click', async () => {
+      await signOut(auth); alert("ログアウトしました"); window.location.href="index.html";
+    });
+
+    // タブ切り替え
+    const tabText = document.getElementById('tab-text');
+    const tabExam = document.getElementById('tab-exam');
+    const areaText = document.getElementById('area-text');
+    const areaExam = document.getElementById('area-exam');
+    const inputArea = document.getElementById('input-area');
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.content-area').forEach(a=>a.classList.remove('active'));
+      if(tab==='text'){
+        tabText.classList.add('active'); areaText.classList.add('active'); inputArea.classList.remove('hidden');
+      } else {
+        tabExam.classList.add('active'); areaExam.classList.add('active'); inputArea.classList.add('hidden');
+      }
+    }
+    tabText.addEventListener('click', ()=>switchTab('text'));
+    tabExam.addEventListener('click', ()=>switchTab('exam'));
+
+    // URLパラメータ取得
+    const params = new URLSearchParams(window.location.search);
+    const schoolId = params.get('school');
+    const deptName = params.get('dept');
+    const schoolName = params.get('sname');
+
+    if(schoolName) document.getElementById('page-title').textContent = schoolName;
+    if(deptName) document.getElementById('page-dept').textContent = deptName + " 掲示板";
+
+    // 投稿読み込み（リアルタイム）
+    const q = query(collection(db,"posts"), where("schoolId","==",schoolId), where("deptName","==",deptName));
+    onSnapshot(q, (snapshot) => {
+      const textC = document.getElementById('posts-container');
+      const examC = document.getElementById('exam-posts-container');
+      textC.innerHTML = ""; examC.innerHTML = "";
+      
+      if(snapshot.empty) { textC.innerHTML = "<p style='color:#aaa'>まだ投稿はありません</p>"; return; }
+
+      let posts = [];
+      snapshot.forEach(doc => posts.push(doc.data()));
+      posts.sort((a,b) => (b.createdAt?.seconds||0) - (a.createdAt?.seconds||0));
+
+      posts.forEach(data => {
+        let dateStr = "日付不明";
+        if(data.createdAt){
+            const d=data.createdAt.toDate();
+            dateStr=`${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${d.getMinutes().toString().padStart(2,'0')}`;
+        }
+
+        const isLong = (data.text.length > 100) || (data.type === 'exam_result');
+        const commentClass = isLong ? 'post-text ai-comment' : 'post-text';
+        // 掲示板内の投稿にも「もっと見る」ボタンをつける
+        const buttonHtml = isLong ? '<button class="toggle-btn">もっと見る ▼</button>' : '';
+
+        const html = `
+          <div class="post-card">
+            <div class="post-meta"><span class="post-name">${data.userName||"名無し"}</span><span>${dateStr}</span></div>
+            <div class="${commentClass}">${escapeHtml(data.text).replace(/\n/g,'<br>')}</div>
+            ${buttonHtml}
+          </div>`;
+          
+        if(data.type==='exam_result') examC.innerHTML += html;
+        else textC.innerHTML += html;
+      });
+    });
+
+    // 投稿送信機能
+    let currentUser = null;
+    const inputF = document.getElementById('msg-input');
+    const sendB = document.getElementById('send-btn');
+    onAuthStateChanged(auth, (u) => {
+      currentUser = u;
+      if(u) { inputF.disabled=false; sendB.disabled=false; inputF.placeholder="質問を入力..."; }
+      else { inputF.disabled=true; sendB.disabled=true; inputF.placeholder="ログインが必要です"; }
+    });
+
+    sendB.addEventListener('click', async()=>{
+      const txt = inputF.value.trim();
+      if(!txt || !currentUser) return;
+      await addDoc(collection(db,"posts"), {
+        schoolId, deptName, text:txt, type:'text', userId:currentUser.uid, userName:currentUser.displayName||"ゲスト", createdAt:serverTimestamp()
+      });
+      inputF.value="";
+    });
+
+    // ==========================================
+    // ★★★ ここからAI機能の修正版 ★★★
+    // ==========================================
+    const upZone = document.getElementById('upload-zone');
+    const fileIn = document.getElementById('file-input');
+    const prevImg = document.getElementById('preview-img');
+    const aiBtn = document.getElementById('btn-analyze');
+    const loadingEl = document.getElementById('ai-loading');
+    const errorEl = document.getElementById('ai-error-msg');
+    let selFile = null;
+
+    upZone.addEventListener('click', ()=>fileIn.click());
+    fileIn.addEventListener('change', (e)=>{
+      if(e.target.files.length>0) {
+        selFile = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          prevImg.src = ev.target.result;
+          prevImg.style.display = 'block';
+          aiBtn.style.display = 'block';
+          upZone.style.display = 'none';
+          errorEl.style.display = 'none';
+        };
+        reader.readAsDataURL(selFile);
       }
     });
 
-    window.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('btn-back').addEventListener('click', () => history.back());
+    aiBtn.addEventListener('click', async()=>{
+      if(!selFile) return;
       
-      const btnLogout = document.getElementById('btn-logout');
-      if(btnLogout) btnLogout.addEventListener('click', async () => {
-        await signOut(auth); alert("ログアウトしました"); window.location.href="index.html";
-      });
+      // UIリセット
+      loadingEl.style.display = 'block';
+      aiBtn.style.display = 'none';
+      errorEl.style.display = 'none';
+      document.getElementById('ai-result-area').style.display = 'none';
 
-      const tabText = document.getElementById('tab-text');
-      const tabExam = document.getElementById('tab-exam');
-      const areaText = document.getElementById('area-text');
-      const areaExam = document.getElementById('area-exam');
-      const inputArea = document.getElementById('input-area');
-
-      function switchTab(tab) {
-        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-        document.querySelectorAll('.content-area').forEach(a=>a.classList.remove('active'));
-        if(tab==='text'){
-          tabText.classList.add('active'); areaText.classList.add('active'); inputArea.classList.remove('hidden');
-        } else {
-          tabExam.classList.add('active'); areaExam.classList.add('active'); inputArea.classList.add('hidden');
-        }
-      }
-      tabText.addEventListener('click', ()=>switchTab('text'));
-      tabExam.addEventListener('click', ()=>switchTab('exam'));
-
-      const params = new URLSearchParams(window.location.search);
-      const schoolId = params.get('school');
-      const deptName = params.get('dept');
-      const schoolName = params.get('sname');
-
-      if(schoolName) document.getElementById('page-title').textContent = schoolName;
-      if(deptName) document.getElementById('page-dept').textContent = deptName + " 掲示板";
-
-      // リアルタイム読み込
-      const q = query(collection(db,"posts"), where("schoolId","==",schoolId), where("deptName","==",deptName));
-      onSnapshot(q, (snapshot) => {
-        const textC = document.getElementById('posts-container');
-        const examC = document.getElementById('exam-posts-container');
-        textC.innerHTML = ""; examC.innerHTML = "";
-        
-        if(snapshot.empty) { textC.innerHTML = "<p style='color:#aaa'>まだ投稿はありません</p>"; return; }
-
-        let posts = [];
-        snapshot.forEach(doc => posts.push(doc.data()));
-        posts.sort((a,b) => (b.createdAt?.seconds||0) - (a.createdAt?.seconds||0));
-
-        posts.forEach(data => {
-          let dateStr = "日付不明";
-          if(data.createdAt){
-             const d=data.createdAt.toDate();
-             dateStr=`${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${d.getMinutes().toString().padStart(2,'0')}`;
-          }
-
+      try {
+        const reader = new FileReader();
+        reader.readAsDataURL(selFile);
+        reader.onloadend = async () => {
+          const base64 = reader.result.split(',')[1];
           
-          const isLong = (data.text.length > 100) || (data.type === 'exam_result');
-          const commentClass = isLong ? 'post-text ai-comment' : 'post-text';
-          const buttonHtml = isLong ? '<button class="toggle-btn">もっと見る ▼</button>' : '';
+          // ★★★ 高品質プロンプト（指示文） ★★★
+          const prompt = `
+あなたは生徒に大人気の「熱血かつ分かりやすいプロ家庭教師」です。
+添付されたテストや問題の画像を解析し、以下の3つのセクションに分けて出力してください。
 
-          const html = `
-            <div class="post-card">
-              <div class="post-meta"><span class="post-name">${data.userName||"名無し"}</span><span>${dateStr}</span></div>
-              <div class="${commentClass}">${escapeHtml(data.text).replace(/\n/g,'<br>')}</div>
-              ${buttonHtml}
-            </div>`;
+**制約事項:**
+1. 出力は必ず以下のセクション区切り記号（【 】）を使用してください。
+2. 生徒がやる気になるような、優しく肯定的な口調で書いてください。
+3. 難しい専門用語は避け、小学生～中学生でも分かる言葉を使ってください。
+
+---
+【解説】
+・まず、答えに至るまでの「考え方の手順」をステップバイステップで説明してください。
+・なぜ間違えやすいのか、どこに注目すれば解けるのかの「コツ」を教えてください。
+・数式だけでなく、言葉での補足を充実させてください。
+
+【類題】
+・画像の問題と同じ単元、同じ難易度の「オリジナルの類題」を3問作成してください。
+・(1), (2), (3) のように番号を振ってください。
+
+【類題の解答】
+・上記3問の答えのみを記載してください。
+---
+`;
+          
+          try {
+            const result = await model.generateContent([
+              prompt, 
+              { inlineData: { data: base64, mimeType: selFile.type } }
+            ]);
+            const responseText = result.response.text();
             
-          if(data.type==='exam_result') examC.innerHTML += html;
-          else textC.innerHTML += html;
-        });
-      });
+            // 結果表示関数を呼び出す
+            renderAIResult(responseText);
+            
+            loadingEl.style.display = 'none';
 
-      let currentUser = null;
-      const inputF = document.getElementById('msg-input');
-      const sendB = document.getElementById('send-btn');
-      onAuthStateChanged(auth, (u) => {
-        currentUser = u;
-        if(u) { inputF.disabled=false; sendB.disabled=false; inputF.placeholder="質問を入力..."; }
-        else { inputF.disabled=true; sendB.disabled=true; inputF.placeholder="ログインが必要です"; }
-      });
-
-      sendB.addEventListener('click', async()=>{
-        const txt = inputF.value.trim();
-        if(!txt || !currentUser) return;
-        await addDoc(collection(db,"posts"), {
-          schoolId, deptName, text:txt, type:'text', userId:currentUser.uid, userName:currentUser.displayName||"ゲスト", createdAt:serverTimestamp()
-        });
-        inputF.value="";
-      });
-
-      const upZone = document.getElementById('upload-zone');
-      const fileIn = document.getElementById('file-input');
-      const prevImg = document.getElementById('preview-img');
-      const aiBtn = document.getElementById('btn-analyze');
-      let selFile = null;
-
-      upZone.addEventListener('click', ()=>fileIn.click());
-      fileIn.addEventListener('change', (e)=>{
-        if(e.target.files.length>0) {
-          selFile = e.target.files[0];
-          const reader = new FileReader();
-          reader.onload = (ev) => {
-            prevImg.src = ev.target.result;
-            prevImg.style.display = 'block';
+          } catch(apiError) {
+            console.error(apiError);
+            errorEl.innerHTML = "APIエラー: " + apiError.message;
+            errorEl.style.display = "block";
             aiBtn.style.display = 'block';
-            upZone.style.display = 'none';
-          };
-          reader.readAsDataURL(selFile);
-        }
-      });
-
-      aiBtn.addEventListener('click', async()=>{
-        const loadingEl = document.getElementById('ai-loading');
-        const errorEl = document.getElementById('ai-error-msg');
-        errorEl.style.display = 'none';
-        
-        if(!selFile) return;
-        loadingEl.style.display = 'block';
-        aiBtn.style.display = 'none';
-
-        try {
-          const reader = new FileReader();
-          reader.readAsDataURL(selFile);
-          reader.onloadend = async () => {
-            const base64 = reader.result.split(',')[1];
-            
-            const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-            const prompt = "あなたはプロの家庭教師です。画像の過去問を解説してください。形式：【解説】...【類題】...【類題の解答】...";
-            
-            try {
-              const result = await model.generateContent([prompt, { inlineData: { data: base64, mimeType: selFile.type } }]);
-              renderAIResult(result.response.text());
-            } catch(apiError) {
-              errorEl.innerHTML = "APIエラー: " + apiError.message;
-              errorEl.style.display = "block";
-              aiBtn.style.display = 'block';
-            }
             loadingEl.style.display = 'none';
           }
-        } catch(e) {
-          errorEl.textContent = "不明なエラー: " + e.message;
-          errorEl.style.display = "block";
-          loadingEl.style.display = 'none';
-          aiBtn.style.display = 'block';
         }
+      } catch(e) {
+        errorEl.textContent = "画像処理エラー: " + e.message;
+        errorEl.style.display = "block";
+        loadingEl.style.display = 'none';
+        aiBtn.style.display = 'block';
+      }
+    });
+
+    // ★★★ AI結果表示 & もっと見るボタン修正 ★★★
+    function renderAIResult(text) {
+      document.getElementById('ai-result-area').style.display = 'block';
+      
+      // テキストを分割
+      const parts = text.split('【');
+      let exp="", sim="", ans="";
+      
+      parts.forEach(p => {
+        if(p.startsWith('解説】')) exp = p.replace('解説】','').trim();
+        if(p.startsWith('類題】')) sim = p.replace('類題】','').trim();
+        if(p.startsWith('類題の解答】')) ans = p.replace('類題の解答】','').trim();
       });
 
-      function renderAIResult(text) {
-        document.getElementById('ai-result-area').style.display = 'block';
+      // 解説エリアへの挿入
+      const expDiv = document.getElementById('ai-explanation');
+      expDiv.innerHTML = exp.replace(/\n/g,'<br>');
+      expDiv.classList.remove('open'); // 初期状態は閉じる
+      
+      // 「もっと見る」ボタンの制御
+      const btn = document.getElementById('btn-exp-toggle');
+      if(btn) {
+        btn.style.display = 'block';
+        btn.textContent = 'もっと見る ▼';
         
-        const parts = text.split('【');
-        let exp="", sim="", ans="";
-        parts.forEach(p => {
-          if(p.startsWith('解説】')) exp=p.replace('解説】','');
-          if(p.startsWith('類題】')) sim=p.replace('類題】','');
-          if(p.startsWith('類題の解答】')) ans=p.replace('類題の解答】','');
-        });
-
-        const expDiv = document.getElementById('ai-explanation');
-        expDiv.innerHTML = exp.replace(/\n/g,'<br>');
-        expDiv.classList.remove('open');
-        
-        const btn = document.getElementById('btn-exp-toggle');
-        if(btn) {
-          btn.style.display = 'block';
-          btn.textContent = 'もっと見る ▼';
-          btn.onclick = () => {
-            expDiv.classList.toggle('open');
-            if (expDiv.classList.contains('open')) btn.textContent = '閉じる ▲';
-            else btn.textContent = 'もっと見る ▼';
-          };
-        }
-
-        document.getElementById('ai-similar-problem').innerHTML = sim.replace(/\n/g,'<br>');
-        document.getElementById('ai-similar-answer').textContent = ans;
-        
-        const now = new Date();
-        document.getElementById('print-date').textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 作成`;
+        // ★修正点：イベントリスナーをリセットして再登録
+        // (以前のonclickが残っていると誤動作するため、新しい関数で上書き)
+        btn.onclick = function() {
+          expDiv.classList.toggle('open');
+          if (expDiv.classList.contains('open')) {
+            btn.textContent = '閉じる ▲';
+          } else {
+            btn.textContent = 'もっと見る ▼';
+          }
+        };
       }
 
-      document.getElementById('btn-save-pdf').addEventListener('click', ()=>{
-        html2pdf().from(document.getElementById('pdf-content')).save();
-      });
-document.getElementById('btn-post-exam').addEventListener('click', async()=>{
-        if(!currentUser) return alert("ログインしてください");
-        const fullText = document.getElementById('pdf-content').innerText;
-        const txt = "【AI解説作成】\n" + fullText;
-        
-        await addDoc(collection(db,"posts"),{
-          schoolId, deptName, text:txt, type:'exam_result', userId:currentUser.uid, userName:currentUser.displayName||"AI User", createdAt:serverTimestamp()
-        });
-        alert("投稿しました");
-      });
+      // 類題と解答の挿入
+      document.getElementById('ai-similar-problem').innerHTML = sim.replace(/\n/g,'<br>');
+      document.getElementById('ai-similar-answer').textContent = ans;
+      
+      // 日付
+      const now = new Date();
+      document.getElementById('print-date').textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 作成`;
+    }
 
-    }); 
+    // PDF保存
+    document.getElementById('btn-save-pdf').addEventListener('click', ()=>{
+      const element = document.getElementById('pdf-content');
+      html2pdf().from(element).save();
+    });
+    
+    // 掲示板への投稿
+    document.getElementById('btn-post-exam').addEventListener('click', async()=>{
+      if(!currentUser) return alert("ログインしてください");
+      const fullText = document.getElementById('pdf-content').innerText;
+      const txt = "【AI解説作成】\n" + fullText;
+      
+      await addDoc(collection(db,"posts"),{
+        schoolId, deptName, text:txt, type:'exam_result', userId:currentUser.uid, userName:currentUser.displayName||"AI User", createdAt:serverTimestamp()
+      });
+      alert("投稿しました");
+    });
 
-    function escapeHtml(s) { return s?s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'):""; }
-  </script>
-</body>
-</html>
+  }); 
+
+  function escapeHtml(s) { return s?s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'):""; }
+</script>
