@@ -91,6 +91,13 @@
     .back-btn:hover { background: #666; color: #fff; border-color: #666; }
     
     .error-box { color: red; font-weight: bold; padding: 20px; border: 2px solid red; background: #ffebeb; border-radius: 10px; margin: 20px 0; text-align: left; }
+     <script type="importmap">
+      {
+        "imports": {
+        "@google/generative-ai": "https://cdn.jsdelivr.net/npm/@google/generative-ai@0.21.0/+esm"
+         }
+      }
+</script>
   </style>
 </head>
     
@@ -138,7 +145,7 @@
       <div class="upload-zone" id="upload-zone">
         <span class="upload-icon">📂</span>
         <p>ここに画像をドラッグ＆ドロップ<br>またはクリックして選択</p>
-        <input type="file" id="file-input" accept="image/*" style="display:none;">
+        <input type="file" id="file-input" accept="image/ *" style="display:none;">
       </div>
       
       <img id="preview-img" alt="プレビュー">
@@ -183,246 +190,251 @@
 
   <script type="module" src="auth.js"></script>
 
-  <script type="module">
-    import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, query, where, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+<script type="module">
+  import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
+  import { getFirestore, collection, addDoc, query, where, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+  import { GoogleGenerativeAI } from "@google/generative-ai";
+
+
+  const GEMINI_API_KEY = "AIzaSyD4R0lmu7rkg3DSMyPNneSPvSGn4NSIhsM"; 
+
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyD4ViHcFj-9334N1OGQR1v3dYN1RhWfzpg", 
+    authDomain: "minnanokakomon-c2b7f.firebaseapp.com",
+    projectId: "minnanokakomon-c2b7f",
+    storageBucket: "minnanokakomon-c2b7f.firebasestorage.app",
+    messagingSenderId: "387571811654",
+    appId: "1:387571811654:web:688b0c4203d07f4ae61147",
+    measurementId: "G-3XFHGSE7FN"
+  };
+
+  let app;
+  if (!getApps().length) { app = initializeApp(firebaseConfig); } else { app = getApps()[0]; }
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  
+
+  const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+
+
+  document.body.style.display = "block";
+
+
+  document.addEventListener('click', function(e) {
+    if(e.target && e.target.classList.contains('toggle-btn')) {
+      const textDiv = e.target.previousElementSibling;
+      if (textDiv && textDiv.classList.contains('ai-comment')) {
+        textDiv.classList.toggle('open');
+        e.target.textContent = textDiv.classList.contains('open') ? '閉じる ▲' : 'もっと見る ▼';
+      }
+    }
+  });
+
+  window.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('btn-back').addEventListener('click', () => history.back());
     
-    // ★重要：AIキーはここでは使いません！削除済みです。
+    const btnLogout = document.getElementById('btn-logout');
+    if(btnLogout) btnLogout.addEventListener('click', async () => {
+      await signOut(auth); alert("ログアウトしました"); window.location.href="index.html";
+    });
 
-    // Firebase Config
-    const firebaseConfig = {
-      apiKey: "AIzaSyD4ViHcFj-9334N1OGQR1v3dYN1RhWfzpg", 
-      authDomain: "minnanokakomon-c2b7f.firebaseapp.com",
-      projectId: "minnanokakomon-c2b7f",
-      storageBucket: "minnanokakomon-c2b7f.firebasestorage.app",
-      messagingSenderId: "387571811654",
-      appId: "1:387571811654:web:688b0c4203d07f4ae61147",
-      measurementId: "G-3XFHGSE7FN"
-    };
+  
+    const tabText = document.getElementById('tab-text');
+    const tabExam = document.getElementById('tab-exam');
+    const areaText = document.getElementById('area-text');
+    const areaExam = document.getElementById('area-exam');
+    const inputArea = document.getElementById('input-area');
 
-    let app;
-    if (!getApps().length) { app = initializeApp(firebaseConfig); } else { app = getApps()[0]; }
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    
-    // 画面表示
-    document.body.style.display = "block";
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.content-area').forEach(a=>a.classList.remove('active'));
+      if(tab==='text'){
+        tabText.classList.add('active'); areaText.classList.add('active'); inputArea.classList.remove('hidden');
+      } else {
+        tabExam.classList.add('active'); areaExam.classList.add('active'); inputArea.classList.add('hidden');
+      }
+    }
+    tabText.addEventListener('click', ()=>switchTab('text'));
+    tabExam.addEventListener('click', ()=>switchTab('exam'));
 
-    // アコーディオン開閉
-    document.addEventListener('click', function(e) {
-      if(e.target && e.target.classList.contains('toggle-btn')) {
-        const textDiv = e.target.previousElementSibling;
-        if (textDiv && textDiv.classList.contains('ai-comment')) {
-          textDiv.classList.toggle('open');
-          e.target.textContent = textDiv.classList.contains('open') ? '閉じる ▲' : 'もっと見る ▼';
-        }
+    // URLパラメータ処理
+    const params = new URLSearchParams(window.location.search);
+    const schoolId = params.get('school');
+    const deptName = params.get('dept');
+    const schoolName = params.get('sname');
+    if(schoolName) document.getElementById('page-title').textContent = schoolName;
+    if(deptName) document.getElementById('page-dept').textContent = deptName + " 掲示板";
+
+    // 投稿読み込み
+    const q = query(collection(db,"posts"), where("schoolId","==",schoolId), where("deptName","==",deptName));
+    onSnapshot(q, (snapshot) => {
+      const textC = document.getElementById('posts-container');
+      const examC = document.getElementById('exam-posts-container');
+      textC.innerHTML = ""; examC.innerHTML = "";
+      if(snapshot.empty) { textC.innerHTML = "<p style='color:#aaa'>まだ投稿はありません</p>"; return; }
+
+      let posts = [];
+      snapshot.forEach(doc => posts.push(doc.data()));
+      posts.sort((a,b) => (b.createdAt?.seconds||0) - (a.createdAt?.seconds||0));
+
+      posts.forEach(data => {
+         let dateStr = "日付不明";
+         if(data.createdAt){
+             const d=data.createdAt.toDate();
+             dateStr=`${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${d.getMinutes().toString().padStart(2,'0')}`;
+         }
+         const isLong = (data.text.length > 100) || (data.type === 'exam_result');
+         const commentClass = isLong ? 'post-text ai-comment' : 'post-text';
+         const buttonHtml = isLong ? '<button class="toggle-btn">もっと見る ▼</button>' : '';
+         const html = `
+           <div class="post-card">
+             <div class="post-meta"><span class="post-name">${data.userName||"名無し"}</span><span>${dateStr}</span></div>
+             <div class="${commentClass}">${escapeHtml(data.text).replace(/\n/g,'<br>')}</div>
+             ${buttonHtml}
+           </div>`;
+         if(data.type==='exam_result') examC.innerHTML += html;
+         else textC.innerHTML += html;
+      });
+    });
+
+    // 投稿機能
+    let currentUser = null;
+    const inputF = document.getElementById('msg-input');
+    const sendB = document.getElementById('send-btn');
+    onAuthStateChanged(auth, (u) => {
+      currentUser = u;
+      if(u) { inputF.disabled=false; sendB.disabled=false; inputF.placeholder="質問を入力..."; }
+      else { inputF.disabled=true; sendB.disabled=true; inputF.placeholder="ログインが必要です"; }
+    });
+
+    sendB.addEventListener('click', async()=>{
+      const txt = inputF.value.trim();
+      if(!txt || !currentUser) return;
+      await addDoc(collection(db,"posts"), {
+        schoolId, deptName, text:txt, type:'text', userId:currentUser.uid, userName:currentUser.displayName||"ゲスト", createdAt:serverTimestamp()
+      });
+      inputF.value="";
+    });
+
+    // === ★ここからAI関連のコード ===
+    const upZone = document.getElementById('upload-zone');
+    const fileIn = document.getElementById('file-input');
+    const prevImg = document.getElementById('preview-img');
+    const aiBtn = document.getElementById('btn-analyze');
+    const loadingEl = document.getElementById('ai-loading');
+    const errorEl = document.getElementById('ai-error-msg');
+    let selFile = null;
+
+    upZone.addEventListener('click', ()=>fileIn.click());
+    fileIn.addEventListener('change', (e)=>{
+      if(e.target.files.length>0) {
+        selFile = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          prevImg.src = ev.target.result;
+          prevImg.style.display = 'block';
+          aiBtn.style.display = 'block';
+          upZone.style.display = 'none';
+          errorEl.style.display = 'none'; // エラー表示リセット
+        };
+        reader.readAsDataURL(selFile);
       }
     });
 
-    window.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('btn-back').addEventListener('click', () => history.back());
+    aiBtn.addEventListener('click', async()=>{
+      if(!selFile) return;
       
-      // タブ切り替え
-      const tabText = document.getElementById('tab-text');
-      const tabExam = document.getElementById('tab-exam');
-      const areaText = document.getElementById('area-text');
-      const areaExam = document.getElementById('area-exam');
-      const inputArea = document.getElementById('input-area');
+      // 表示の切り替え
+      loadingEl.style.display = 'block';
+      aiBtn.style.display = 'none';
+      errorEl.style.display = 'none';
 
-      function switchTab(tab) {
-        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-        document.querySelectorAll('.content-area').forEach(a=>a.classList.remove('active'));
-        if(tab==='text'){
-          tabText.classList.add('active'); areaText.classList.add('active'); inputArea.classList.remove('hidden');
-        } else {
-          tabExam.classList.add('active'); areaExam.classList.add('active'); inputArea.classList.add('hidden');
-        }
-      }
-      tabText.addEventListener('click', ()=>switchTab('text'));
-      tabExam.addEventListener('click', ()=>switchTab('exam'));
-
-      // URLパラメータ取得
-      const params = new URLSearchParams(window.location.search);
-      const schoolId = params.get('school');
-      const deptName = params.get('dept');
-      const schoolName = params.get('sname');
-
-      if(schoolName) document.getElementById('page-title').textContent = schoolName;
-      if(deptName) document.getElementById('page-dept').textContent = deptName + " 掲示板";
-
-      // 投稿読み込み (Firestore)
-      const q = query(collection(db,"posts"), where("schoolId","==",schoolId), where("deptName","==",deptName));
-      onSnapshot(q, (snapshot) => {
-        const textC = document.getElementById('posts-container');
-        const examC = document.getElementById('exam-posts-container');
-        textC.innerHTML = ""; examC.innerHTML = "";
-        
-        if(snapshot.empty) { textC.innerHTML = "<p style='color:#aaa'>まだ投稿はありません</p>"; return; }
-
-        let posts = [];
-        snapshot.forEach(doc => posts.push(doc.data()));
-        posts.sort((a,b) => (b.createdAt?.seconds||0) - (a.createdAt?.seconds||0));
-
-        posts.forEach(data => {
-          let dateStr = "日付不明";
-          if(data.createdAt){
-             const d=data.createdAt.toDate();
-             dateStr=`${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${d.getMinutes().toString().padStart(2,'0')}`;
-          }
+      try {
+        const reader = new FileReader();
+        reader.readAsDataURL(selFile);
+        reader.onloadend = async () => {
+          const base64 = reader.result.split(',')[1];
           
-          const isLong = (data.text.length > 100) || (data.type === 'exam_result');
-          const commentClass = isLong ? 'post-text ai-comment' : 'post-text';
-          const buttonHtml = isLong ? '<button class="toggle-btn">もっと見る ▼</button>' : '';
-
-          const html = `
-            <div class="post-card">
-              <div class="post-meta"><span class="post-name">${data.userName||"名無し"}</span><span>${dateStr}</span></div>
-              <div class="${commentClass}">${escapeHtml(data.text).replace(/\n/g,'<br>')}</div>
-              ${buttonHtml}
-            </div>`;
-            
-          if(data.type==='exam_result') examC.innerHTML += html;
-          else textC.innerHTML += html;
-        });
-      });
-
-      // ユーザー監視 & 送信
-      let currentUser = null;
-      const inputF = document.getElementById('msg-input');
-      const sendB = document.getElementById('send-btn');
-      
-      onAuthStateChanged(auth, (u) => {
-        currentUser = u;
-        if(u) { inputF.disabled=false; sendB.disabled=false; inputF.placeholder="質問を入力..."; }
-        else { inputF.disabled=true; sendB.disabled=true; inputF.placeholder="ログインが必要です"; }
-      });
-
-      sendB.addEventListener('click', async()=>{
-        const txt = inputF.value.trim();
-        if(!txt || !currentUser) return;
-        await addDoc(collection(db,"posts"), {
-          schoolId, deptName, text:txt, type:'text', userId:currentUser.uid, userName:currentUser.displayName||"ゲスト", createdAt:serverTimestamp()
-        });
-        inputF.value="";
-      });
-
-      // 画像アップロード & AI解析
-      const upZone = document.getElementById('upload-zone');
-      const fileIn = document.getElementById('file-input');
-      const prevImg = document.getElementById('preview-img');
-      const aiBtn = document.getElementById('btn-analyze');
-      let selFile = null;
-
-      upZone.addEventListener('click', ()=>fileIn.click());
-      fileIn.addEventListener('change', (e)=>{
-        if(e.target.files.length>0) {
-          selFile = e.target.files[0];
-          const reader = new FileReader();
-          reader.onload = (ev) => {
-            prevImg.src = ev.target.result;
-            prevImg.style.display = 'block';
-            aiBtn.style.display = 'block';
-            upZone.style.display = 'none';
-          };
-          reader.readAsDataURL(selFile);
-        }
-      });
-
-      // ★★★ AI解析処理（Vercel経由） ★★★
-      aiBtn.addEventListener('click', async()=>{
-        const loadingEl = document.getElementById('ai-loading');
-        const errorEl = document.getElementById('ai-error-msg');
-        errorEl.style.display = 'none';
-        
-        if(!selFile) return;
-        loadingEl.style.display = 'block';
-        aiBtn.style.display = 'none';
-
-        try {
-          const reader = new FileReader();
-          reader.readAsDataURL(selFile);
+          // ★ここで直接AIを呼び出す（gemini-1.5-flashを使用）
+          const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+          const prompt = "あなたはプロの家庭教師です。画像の過去問を解説してください。形式：【解説】...【類題】...【類題の解答】...";
           
-          reader.onloadend = async () => {
-            // 画像データを準備
-            const base64 = reader.result.split(',')[1];
-            const promptText = "あなたはプロの家庭教師です。画像の過去問を解説してください。形式：【解説】...【類題】...【類題の解答】...";
+          try {
+            const result = await model.generateContent([
+              prompt, 
+              { inlineData: { data: base64, mimeType: selFile.type } }
+            ]);
+            const responseText = result.response.text();
             
-            // ★Vercelのサーバー(/api/gemini)に依頼する！
-            const response = await fetch('/api/gemini', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ prompt: promptText, imageBase64: base64 })
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-              throw new Error(data.error || 'APIエラーが発生しました');
-            }
-
-            renderAIResult(data.text);
+            renderAIResult(responseText);
+            loadingEl.style.display = 'none'; // 成功したら消す
+            
+          } catch(apiError) {
+            console.error(apiError);
+            errorEl.innerHTML = "AIエラーが発生しました。<br>原因: " + apiError.message;
+            errorEl.style.display = "block";
+            aiBtn.style.display = 'block'; // ボタンを復活させる
             loadingEl.style.display = 'none';
           }
-        } catch(e) {
-          errorEl.textContent = "エラー: " + e.message;
-          errorEl.style.display = "block";
-          loadingEl.style.display = 'none';
-          aiBtn.style.display = 'block';
         }
-      });
-
-      function renderAIResult(text) {
-        document.getElementById('ai-result-area').style.display = 'block';
-        
-        const parts = text.split('【');
-        let exp="", sim="", ans="";
-        parts.forEach(p => {
-          if(p.startsWith('解説】')) exp=p.replace('解説】','');
-          if(p.startsWith('類題】')) sim=p.replace('類題】','');
-          if(p.startsWith('類題の解答】')) ans=p.replace('類題の解答】','');
-        });
-
-        const expDiv = document.getElementById('ai-explanation');
-        expDiv.innerHTML = exp.replace(/\n/g,'<br>');
-        expDiv.classList.remove('open');
-        
-        const btn = document.getElementById('btn-exp-toggle');
-        if(btn) {
-          btn.style.display = 'block';
-          btn.textContent = 'もっと見る ▼';
-          btn.onclick = () => {
-            expDiv.classList.toggle('open');
-            if (expDiv.classList.contains('open')) btn.textContent = '閉じる ▲';
-            else btn.textContent = 'もっと見る ▼';
-          };
-        }
-
-        document.getElementById('ai-similar-problem').innerHTML = sim.replace(/\n/g,'<br>');
-        document.getElementById('ai-similar-answer').textContent = ans;
-        
-        const now = new Date();
-        document.getElementById('print-date').textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 作成`;
+      } catch(e) {
+        console.error(e);
+        errorEl.textContent = "画像の読み込みに失敗しました: " + e.message;
+        errorEl.style.display = "block";
+        aiBtn.style.display = 'block';
+        loadingEl.style.display = 'none';
       }
+    });
 
-      document.getElementById('btn-save-pdf').addEventListener('click', ()=>{
-        html2pdf().from(document.getElementById('pdf-content')).save();
+    function renderAIResult(text) {
+      document.getElementById('ai-result-area').style.display = 'block';
+      const parts = text.split('【');
+      let exp="", sim="", ans="";
+      parts.forEach(p => {
+        if(p.startsWith('解説】')) exp=p.replace('解説】','');
+        if(p.startsWith('類題】')) sim=p.replace('類題】','');
+        if(p.startsWith('類題の解答】')) ans=p.replace('類題の解答】','');
       });
+
+      const expDiv = document.getElementById('ai-explanation');
+      expDiv.innerHTML = exp.replace(/\n/g,'<br>');
+      expDiv.classList.remove('open');
       
-      document.getElementById('btn-post-exam').addEventListener('click', async()=>{
-        if(!currentUser) return alert("ログインしてください");
-        const fullText = document.getElementById('pdf-content').innerText;
-        const txt = "【AI解説作成】\n" + fullText;
-        
-        await addDoc(collection(db,"posts"),{
-          schoolId, deptName, text:txt, type:'exam_result', userId:currentUser.uid, userName:currentUser.displayName||"AI User", createdAt:serverTimestamp()
-        });
-        alert("投稿しました");
+      const btn = document.getElementById('btn-exp-toggle');
+      if(btn) {
+        btn.style.display = 'block';
+        btn.textContent = 'もっと見る ▼';
+        btn.onclick = () => {
+          expDiv.classList.toggle('open');
+          if (expDiv.classList.contains('open')) btn.textContent = '閉じる ▲';
+          else btn.textContent = 'もっと見る ▼';
+        };
+      }
+      document.getElementById('ai-similar-problem').innerHTML = sim.replace(/\n/g,'<br>');
+      document.getElementById('ai-similar-answer').textContent = ans;
+      
+      const now = new Date();
+      document.getElementById('print-date').textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 作成`;
+    }
+
+    document.getElementById('btn-save-pdf').addEventListener('click', ()=>{
+      html2pdf().from(document.getElementById('pdf-content')).save();
+    });
+    
+    document.getElementById('btn-post-exam').addEventListener('click', async()=>{
+      if(!currentUser) return alert("ログインしてください");
+      const fullText = document.getElementById('pdf-content').innerText;
+      const txt = "【AI解説作成】\n" + fullText;
+      await addDoc(collection(db,"posts"),{
+        schoolId, deptName, text:txt, type:'exam_result', userId:currentUser.uid, userName:currentUser.displayName||"AI User", createdAt:serverTimestamp()
       });
+      alert("投稿しました");
+    });
+  }); 
 
-    }); 
-
-    function escapeHtml(s) { return s?s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'):""; }
-  </script>
+  function escapeHtml(s) { return s?s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'):""; }
+</script>
 </body>
 </html>
