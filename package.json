@@ -2,7 +2,6 @@
   "name": "minnanokakomon",
   "version": "1.0.0",
   "dependencies": {
-    "@google/genai": "^1.30.0",
     "@google/generative-ai": "^0.21.0"
   }
 }
