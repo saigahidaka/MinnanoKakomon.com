@@ -194,7 +194,8 @@
   
   // モデル設定（gemini-1.5-flashを使用推奨 ※2.0はまだ不安定な場合があるため）
   const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+// これなら動くはず！（末尾に -latest をつける）
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
 
   // 画面表示
   document.body.style.display = "block";
